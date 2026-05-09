@@ -21,24 +21,26 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.summary}>
-          <Text style={styles.summaryLabel}>Total Spent</Text>
-          <Text style={styles.summaryAmount}>${total.toFixed(2)}</Text>
-          <Text style={styles.summaryCount}>
-            {state.expenses.length} expense{state.expenses.length !== 1 ? 's' : ''}
-          </Text>
-        </View>
+      <TouchableOpacity
+        style={styles.fullScreenButton}
+        onPress={() => navigation.navigate('AddAmount')}
+        activeOpacity={0.92}
+      >
+        <View style={styles.content}>
+          <View style={styles.summary}>
+            <Text style={styles.summaryLabel}>Total Spent</Text>
+            <Text style={styles.summaryAmount}>${total.toFixed(2)}</Text>
+            <Text style={styles.summaryCount}>
+              {state.expenses.length} expense{state.expenses.length !== 1 ? 's' : ''}
+            </Text>
+          </View>
 
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate('AddAmount')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.addButtonIcon}>+</Text>
-          <Text style={styles.addButtonText}>Add Expense</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.hint}>
+            <Text style={styles.hintIcon}>+</Text>
+            <Text style={styles.hintText}>Tap anywhere to add expense</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -46,7 +48,10 @@ export default function HomeScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.primary,
+  },
+  fullScreenButton: {
+    flex: 1,
   },
   content: {
     flex: 1,
@@ -57,57 +62,37 @@ const styles = StyleSheet.create({
   },
   summary: {
     alignItems: 'center',
-    backgroundColor: COLORS.card,
-    borderRadius: BORDER_RADIUS.lg,
-    paddingVertical: SPACING.xl,
-    paddingHorizontal: SPACING.xl,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
   },
   summaryLabel: {
-    fontSize: FONT_SIZE.md,
-    color: COLORS.subtext,
+    fontSize: FONT_SIZE.lg,
+    color: 'rgba(255,255,255,0.7)',
     marginBottom: SPACING.xs,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   summaryAmount: {
-    fontSize: FONT_SIZE.xxxl,
+    fontSize: 72,
     fontWeight: '700',
-    color: COLORS.text,
+    color: COLORS.white,
     marginBottom: SPACING.xs,
   },
   summaryCount: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.subtext,
+    fontSize: FONT_SIZE.md,
+    color: 'rgba(255,255,255,0.6)',
   },
-  addButton: {
-    backgroundColor: COLORS.primary,
-    borderRadius: BORDER_RADIUS.lg,
-    paddingVertical: SPACING.lg,
-    paddingHorizontal: SPACING.xl,
-    width: '100%',
+  hint: {
     alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: SPACING.sm,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    gap: SPACING.xs,
   },
-  addButtonIcon: {
-    fontSize: FONT_SIZE.xxl,
-    color: COLORS.white,
-    fontWeight: '300',
-    lineHeight: FONT_SIZE.xxl + 2,
+  hintIcon: {
+    fontSize: 48,
+    color: 'rgba(255,255,255,0.9)',
+    fontWeight: '200',
+    lineHeight: 56,
   },
-  addButtonText: {
-    fontSize: FONT_SIZE.xl,
-    fontWeight: '600',
-    color: COLORS.white,
+  hintText: {
+    fontSize: FONT_SIZE.md,
+    color: 'rgba(255,255,255,0.5)',
+    letterSpacing: 0.5,
   },
 });

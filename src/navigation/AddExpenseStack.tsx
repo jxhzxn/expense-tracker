@@ -25,7 +25,7 @@ export default function AddExpenseStack() {
       <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{ title: 'Expense Tracker' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="AddAmount"
