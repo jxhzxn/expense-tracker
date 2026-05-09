@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Tracker — Project Documentation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4F46E5;
+      --primary-light: #EEF2FF;
+      --bg: #F9FAFB;
+      --card: #ffffff;
+      --text: #111827;
+      --subtext: #6B7280;
+      --border: #E5E7EB;
+      --green: #10B981;
+      --amber: #F59E0B;
+      --pink: #EC4899;
+      --blue: #3B82F6;
+      --purple: #8B5CF6;
+      --orange: #F97316;
+      --gray: #6B7280;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 48px 40px 40px;
+    }
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      margin-bottom: 16px;
+    }
+    header h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+    header p { font-size: 16px; opacity: .8; max-width: 560px; }
+    header .meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    header .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      opacity: .85;
+    }
+    header .meta-item span { font-weight: 600; }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+
+    /* ── SECTION ── */
+    section { margin-bottom: 56px; }
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title .icon {
+      width: 36px; height: 36px;
+      background: var(--primary-light);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 12px;
+    }
+    .card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card p { font-size: 14px; color: var(--subtext); }
+
+    /* ── TAG ── */
+    .tag {
+      display: inline-block;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+    .tag-screen   { background: #DBEAFE; color: #1D4ED8; }
+    .tag-nav      { background: #F3E8FF; color: #7C3AED; }
+    .tag-context  { background: #D1FAE5; color: #065F46; }
+    .tag-storage  { background: #FEF3C7; color: #92400E; }
+    .tag-type     { background: #E5E7EB; color: #374151; }
+    .tag-component{ background: #FCE7F3; color: #9D174D; }
+
+    /* ── FILE TREE ── */
+    .file-tree {
+      background: #1E1E2E;
+      color: #CDD6F4;
+      border-radius: 14px;
+      padding: 28px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 2;
+      overflow-x: auto;
+    }
+    .file-tree .dir   { color: #89B4FA; font-weight: 600; }
+    .file-tree .file  { color: #CDD6F4; }
+    .file-tree .comment { color: #585B70; }
+    .file-tree .indent1 { padding-left: 20px; }
+    .file-tree .indent2 { padding-left: 40px; }
+    .file-tree .indent3 { padding-left: 60px; }
+
+    /* ── NAV DIAGRAM ── */
+    .nav-diagram {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px 24px;
+      overflow-x: auto;
+    }
+    .nav-tree {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .nav-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+    .nav-box {
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-weight: 600;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .nav-container { background: var(--primary); color: white; }
+    .nav-tabs      { background: #F3E8FF; color: #7C3AED; border: 1.5px solid #C4B5FD; }
+    .nav-stack     { background: #DBEAFE; color: #1D4ED8; border: 1.5px solid #BFDBFE; }
+    .nav-screen    { background: #D1FAE5; color: #065F46; border: 1.5px solid #A7F3D0; }
+    .nav-line      { color: var(--subtext); font-family: monospace; font-size: 16px; }
+
+    /* ── FLOW ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .flow-step {
+      flex: 1;
+      min-width: 160px;
+      text-align: center;
+      padding: 16px 12px;
+    }
+    .flow-step-num {
+      width: 28px; height: 28px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 10px;
+    }
+    .flow-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .flow-step p  { font-size: 12px; color: var(--subtext); }
+    .flow-arrow {
+      color: var(--border);
+      font-size: 22px;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+
+    /* ── DATA MODEL ── */
+    .model-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .model-table th {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+    .model-table th:first-child { border-radius: 8px 0 0 8px; }
+    .model-table th:last-child  { border-radius: 0 8px 8px 0; }
+    .model-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .model-table tr:last-child td { border-bottom: none; }
+    .model-table .field { font-family: 'SF Mono', monospace; font-weight: 600; color: var(--primary); }
+    .model-table .type-val  { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--subtext); }
+
+    /* ── CATEGORIES ── */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .cat-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid;
+    }
+    .cat-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ── STACK CHIPS ── */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .stack-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .stack-item .lib-name {
+      font-family: 'SF Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .stack-item p { font-size: 12px; color: var(--subtext); }
+
+    /* ── SORT OPTIONS ── */
+    .sort-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .sort-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .sort-icon {
+      width: 36px; height: 36px;
+      background: var(--primary-light);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .sort-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .sort-item p  { font-size: 12px; color: var(--subtext); }
+
+    /* ── RUN INSTRUCTIONS ── */
+    .run-steps { display: flex; flex-direction: column; gap: 12px; }
+    .run-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .run-step-num {
+      width: 28px; height: 28px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .run-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .run-step p  { font-size: 13px; color: var(--subtext); }
+    code {
+      background: #F3F4F6;
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--primary);
+    }
+    pre {
+      background: #1E1E2E;
+      color: #CDD6F4;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      color: var(--subtext);
+      font-size: 13px;
+      padding: 32px 24px 48px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════════ -->
+<header>
+  <div class="badge">React Native · Expo · TypeScript</div>
+  <h1>Expense Tracker</h1>
+  <p>A simple, clean mobile app to track personal expenses — built with React Native and Expo, frontend-only.</p>
+  <div class="meta">
+    <div class="meta-item">📅 <span>May 2026</span></div>
+    <div class="meta-item">🌿 <span>Branch: initial</span></div>
+    <div class="meta-item">📦 <span>Expo ~54 · RN 0.81.5 · React 19</span></div>
+    <div class="meta-item">🔷 <span>TypeScript · Zero errors</span></div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- ════════════════════════════════════════════
+       WHAT WAS BUILT
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">🎯</div>
+      What Was Built
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
+      <div class="card">
+        <h3>🏠 Home Screen</h3>
+        <p>Shows your total spent and a large "Add Expense" button. Acts as the app's dashboard.</p>
+      </div>
+      <div class="card">
+        <h3>💰 Add Amount</h3>
+        <p>Step 1 of 2. A focused numeric input where you type the amount you spent.</p>
+      </div>
+      <div class="card">
+        <h3>🏷️ Select Category</h3>
+        <p>Step 2 of 2. Tap a category from a grid — the expense saves immediately and you're returned home.</p>
+      </div>
+      <div class="card">
+        <h3>📋 Expense History</h3>
+        <p>A sortable list of all your saved expenses. Supports 4 sort modes. Shows an empty state when no expenses exist.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       USER FLOW
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">➡️</div>
+      Add Expense Flow
+    </div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <h4>Home Screen</h4>
+        <p>Tap the big "Add Expense" button</p>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <h4>Enter Amount</h4>
+        <p>Type a dollar amount, tap "Next →"</p>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <h4>Select Category</h4>
+        <p>Tap one of 7 category cards</p>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <h4>Saved!</h4>
+        <p>Expense saved to storage, app returns to Home</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       FILE STRUCTURE
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">🗂️</div>
+      File Structure
+    </div>
+    <div class="file-tree">
+      <div><span class="dir">Expense Tracker/</span></div>
+      <div class="indent1"><span class="file">App.tsx</span> <span class="comment">— entry point, wraps app in provider + navigation</span></div>
+      <div class="indent1"><span class="file">index.js</span> <span class="comment">— registers root component with Expo</span></div>
+      <div class="indent1"><span class="file">app.json</span> <span class="comment">— Expo config (name, icon, splash)</span></div>
+      <div class="indent1"><span class="file">tsconfig.json</span> <span class="comment">— TypeScript configuration</span></div>
+      <div class="indent1"><span class="file">babel.config.js</span> <span class="comment">— Babel preset for Expo</span></div>
+      <div class="indent1"><span class="file">package.json</span> <span class="comment">— dependencies and scripts</span></div>
+      <div class="indent1"><span class="dir">src/</span></div>
+      <div class="indent2"><span class="dir">types/</span></div>
+      <div class="indent3"><span class="file">expense.ts</span> <span class="comment">— Expense interface, Category type, CATEGORIES list</span></div>
+      <div class="indent2"><span class="dir">constants/</span></div>
+      <div class="indent3"><span class="file">theme.ts</span> <span class="comment">— colors, spacing, font sizes, category colors</span></div>
+      <div class="indent2"><span class="dir">storage/</span></div>
+      <div class="indent3"><span class="file">storage.ts</span> <span class="comment">— loadExpenses() / saveExpenses() via AsyncStorage</span></div>
+      <div class="indent2"><span class="dir">context/</span></div>
+      <div class="indent3"><span class="file">ExpenseContext.tsx</span> <span class="comment">— global state, useReducer, auto-persist</span></div>
+      <div class="indent2"><span class="dir">navigation/</span></div>
+      <div class="indent3"><span class="file">RootNavigator.tsx</span> <span class="comment">— bottom tab bar (Home + History)</span></div>
+      <div class="indent3"><span class="file">AddExpenseStack.tsx</span> <span class="comment">— stack navigator for 2-step add flow</span></div>
+      <div class="indent2"><span class="dir">screens/</span></div>
+      <div class="indent3"><span class="file">HomeScreen.tsx</span> <span class="comment">— total summary + Add Expense button</span></div>
+      <div class="indent3"><span class="file">AddAmountScreen.tsx</span> <span class="comment">— step 1: numeric input</span></div>
+      <div class="indent3"><span class="file">AddCategoryScreen.tsx</span> <span class="comment">— step 2: category grid, dispatches save</span></div>
+      <div class="indent3"><span class="file">HistoryScreen.tsx</span> <span class="comment">— sorted FlatList of expenses</span></div>
+      <div class="indent2"><span class="dir">components/</span></div>
+      <div class="indent3"><span class="file">ExpenseCard.tsx</span> <span class="comment">— single expense row (pill + amount + date)</span></div>
+      <div class="indent3"><span class="file">CategoryPill.tsx</span> <span class="comment">— colored category badge</span></div>
+      <div class="indent3"><span class="file">SortPicker.tsx</span> <span class="comment">— horizontal sort chips</span></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       NAVIGATION
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">🧭</div>
+      Navigation Architecture
+    </div>
+    <div class="nav-diagram">
+      <div class="nav-tree">
+        <div class="nav-row">
+          <span class="nav-box nav-container">NavigationContainer</span>
+          <span class="nav-line" style="color:#6B7280; font-size:13px; margin-left:8px;">— in App.tsx</span>
+        </div>
+        <div class="nav-row" style="padding-left:24px;">
+          <span style="color:#d1d5db; font-family:monospace">└─</span>
+          <span class="nav-box nav-tabs">RootNavigator (Bottom Tabs)</span>
+        </div>
+        <div class="nav-row" style="padding-left:48px;">
+          <span style="color:#d1d5db; font-family:monospace">├─</span>
+          <span class="nav-box nav-stack">Tab: Home → AddExpenseStack (Native Stack)</span>
+        </div>
+        <div class="nav-row" style="padding-left:72px;">
+          <span style="color:#d1d5db; font-family:monospace">├─</span>
+          <span class="nav-box nav-screen">HomeScreen</span>
+        </div>
+        <div class="nav-row" style="padding-left:72px;">
+          <span style="color:#d1d5db; font-family:monospace">├─</span>
+          <span class="nav-box nav-screen">AddAmountScreen</span>
+        </div>
+        <div class="nav-row" style="padding-left:72px;">
+          <span style="color:#d1d5db; font-family:monospace">└─</span>
+          <span class="nav-box nav-screen">AddCategoryScreen</span>
+          <span style="font-size:12px; color:#6B7280; margin-left:8px;">receives <code>amount</code> as route param</span>
+        </div>
+        <div class="nav-row" style="padding-left:48px;">
+          <span style="color:#d1d5db; font-family:monospace">└─</span>
+          <span class="nav-box nav-stack">Tab: History</span>
+        </div>
+        <div class="nav-row" style="padding-left:72px;">
+          <span style="color:#d1d5db; font-family:monospace">└─</span>
+          <span class="nav-box nav-screen">HistoryScreen</span>
+        </div>
+      </div>
+      <p style="margin-top: 20px; font-size: 13px; color: var(--subtext);">
+        The add-expense flow lives <strong>inside the Home tab</strong> so the bottom tab bar disappears during the 2-step entry — preventing the user from accidentally tabbing away mid-flow.
+      </p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       DATA MODEL
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">🗃️</div>
+      Data Model
+    </div>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table class="model-table">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="field">id</td>
+            <td class="type-val">string (uuid v4)</td>
+            <td>Unique identifier generated by <code>react-native-uuid</code></td>
+          </tr>
+          <tr>
+            <td class="field">amount</td>
+            <td class="type-val">number (float)</td>
+            <td>Dollar amount, e.g. <code>12.50</code></td>
+          </tr>
+          <tr>
+            <td class="field">category</td>
+            <td class="type-val">Category (union type)</td>
+            <td>One of the 7 predefined categories</td>
+          </tr>
+          <tr>
+            <td class="field">createdAt</td>
+            <td class="type-val">string (ISO 8601)</td>
+            <td>Stored as a string so it serializes cleanly through JSON/AsyncStorage. Sorts lexicographically.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <p style="font-size: 14px; color: var(--subtext); margin-bottom: 12px;">The 7 categories — each with a unique color:</p>
+      <div class="categories">
+        <div class="cat-pill" style="color: #92400E; border-color: #F59E0B44; background: #FEF3C7;">
+          <div class="cat-dot" style="background:#F59E0B"></div> Food
+        </div>
+        <div class="cat-pill" style="color: #1E40AF; border-color: #3B82F644; background: #DBEAFE;">
+          <div class="cat-dot" style="background:#3B82F6"></div> Transport
+        </div>
+        <div class="cat-pill" style="color: #9D174D; border-color: #EC489944; background: #FCE7F3;">
+          <div class="cat-dot" style="background:#EC4899"></div> Shopping
+        </div>
+        <div class="cat-pill" style="color: #065F46; border-color: #10B98144; background: #D1FAE5;">
+          <div class="cat-dot" style="background:#10B981"></div> Health
+        </div>
+        <div class="cat-pill" style="color: #5B21B6; border-color: #8B5CF644; background: #EDE9FE;">
+          <div class="cat-dot" style="background:#8B5CF6"></div> Entertainment
+        </div>
+        <div class="cat-pill" style="color: #9A3412; border-color: #F9731644; background: #FFEDD5;">
+          <div class="cat-dot" style="background:#F97316"></div> Utilities
+        </div>
+        <div class="cat-pill" style="color: #374151; border-color: #6B728044; background: #F3F4F6;">
+          <div class="cat-dot" style="background:#6B7280"></div> Other
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       STATE MANAGEMENT
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">⚡</div>
+      State Management
+    </div>
+    <div class="card">
+      <h3><span class="tag tag-context">Context</span> &nbsp;ExpenseContext.tsx</h3>
+      <p style="margin-top: 8px;">Global state is managed with <strong>React Context + useReducer</strong>. No external library needed. The reducer handles two actions:</p>
+      <ul style="margin-top: 12px; padding-left: 20px; font-size: 14px; color: var(--subtext); display:flex; flex-direction:column; gap:6px;">
+        <li><code>LOAD_EXPENSES</code> — called on app startup to hydrate state from AsyncStorage</li>
+        <li><code>ADD_EXPENSE</code> — adds a new expense to the top of the list</li>
+      </ul>
+      <p style="margin-top: 12px; font-size: 14px; color: var(--subtext);">
+        Two <code>useEffect</code> hooks handle persistence automatically — one loads data on mount, the other saves whenever the expenses array changes. No manual save calls needed anywhere in the app.
+      </p>
+      <p style="margin-top: 12px; font-size: 14px; color: var(--subtext);">
+        Future actions (e.g. <code>DELETE_EXPENSE</code>, <code>EDIT_EXPENSE</code>) can be added to the reducer without restructuring anything.
+      </p>
+    </div>
+    <div class="card">
+      <h3><span class="tag tag-storage">Storage</span> &nbsp;storage.ts</h3>
+      <p style="margin-top: 8px;">Two plain async functions that read/write a JSON array to AsyncStorage under the key <code>@expense_tracker_expenses</code>. Pure functions — easy to test and replace with an API later.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       SORT OPTIONS
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">🔢</div>
+      Sort Options (History Tab)
+    </div>
+    <div class="sort-grid">
+      <div class="sort-item">
+        <div class="sort-icon">🕐</div>
+        <div>
+          <h4>Newest First</h4>
+          <p>Default. Most recent expense at the top.</p>
+        </div>
+      </div>
+      <div class="sort-item">
+        <div class="sort-icon">📅</div>
+        <div>
+          <h4>Oldest First</h4>
+          <p>Chronological order from first expense.</p>
+        </div>
+      </div>
+      <div class="sort-item">
+        <div class="sort-icon">⬆️</div>
+        <div>
+          <h4>Highest Amount</h4>
+          <p>Most expensive at the top.</p>
+        </div>
+      </div>
+      <div class="sort-item">
+        <div class="sort-icon">⬇️</div>
+        <div>
+          <h4>Lowest Amount</h4>
+          <p>Cheapest at the top.</p>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top: 14px; font-size: 13px; color: var(--subtext);">
+      Sort state lives in <code>HistoryScreen</code> local state (not in global context) — it's a view preference, not shared data. The sorted list is computed with <code>useMemo</code> so it only re-calculates when expenses or the sort option change.
+    </p>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       TECH STACK
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">📦</div>
+      Tech Stack &amp; Libraries
+    </div>
+    <div class="stack-grid">
+      <div class="stack-item">
+        <div class="lib-name">expo ~54</div>
+        <p>App runtime and dev tooling. Lets you run on iOS/Android without Xcode/Android Studio via Expo Go.</p>
+      </div>
+      <div class="stack-item">
+        <div class="lib-name">react-native 0.81.5</div>
+        <p>Core framework. All UI is built with native components (View, Text, FlatList, etc.).</p>
+      </div>
+      <div class="stack-item">
+        <div class="lib-name">@react-navigation/native</div>
+        <p>Core navigation library. Provides NavigationContainer and navigation hooks.</p>
+      </div>
+      <div class="stack-item">
+        <div class="lib-name">@react-navigation/bottom-tabs</div>
+        <p>Renders the Home / History tab bar at the bottom of the screen.</p>
+      </div>
+      <div class="stack-item">
+        <div class="lib-name">@react-navigation/native-stack</div>
+        <p>Manages the Home → AddAmount → AddCategory navigation stack.</p>
+      </div>
+      <div class="stack-item">
+        <div class="lib-name">@react-native-async-storage</div>
+        <p>Local key-value storage. Persists expenses between app restarts — no backend needed.</p>
+      </div>
+      <div class="stack-item">
+        <div class="lib-name">react-native-uuid</div>
+        <p>Generates unique IDs (UUID v4) for each expense without needing a server.</p>
+      </div>
+      <div class="stack-item">
+        <div class="lib-name">typescript 5.9</div>
+        <p>Full type safety across all files. TypeScript check passes with zero errors.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       HOW TO RUN
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">🚀</div>
+      How to Run
+    </div>
+    <div class="run-steps">
+      <div class="run-step">
+        <div class="run-step-num">1</div>
+        <div>
+          <h4>Load Node.js (nvm)</h4>
+          <p>Node.js is installed via nvm. Load it in your terminal before running any commands.</p>
+          <pre>export NVM_DIR="$HOME/.nvm" && \. "$NVM_DIR/nvm.sh"</pre>
+        </div>
+      </div>
+      <div class="run-step">
+        <div class="run-step-num">2</div>
+        <div>
+          <h4>Start Expo dev server</h4>
+          <pre>cd "/Users/jahzan/Documents/Projects/Expense Tracker"
+npx expo start</pre>
+        </div>
+      </div>
+      <div class="run-step">
+        <div class="run-step-num">3a</div>
+        <div>
+          <h4>Run on your iPhone (easiest)</h4>
+          <p>Install <strong>Expo Go</strong> from the App Store, then scan the QR code shown in the terminal.</p>
+        </div>
+      </div>
+      <div class="run-step">
+        <div class="run-step-num">3b</div>
+        <div>
+          <h4>Run on iOS Simulator</h4>
+          <p>Requires the full <strong>Xcode</strong> app (free on Mac App Store, ~15 GB). After installing Xcode, press <code>i</code> in the terminal while Expo is running.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       WHAT'S NEXT
+       ════════════════════════════════════════════ -->
+  <section>
+    <div class="section-title">
+      <div class="icon">🔮</div>
+      What's Next (Future Ideas)
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px;">
+      <div class="card">
+        <h3>🗑️ Delete Expenses</h3>
+        <p>Add a swipe-to-delete on expense cards. Only needs a new <code>DELETE_EXPENSE</code> action in the reducer.</p>
+      </div>
+      <div class="card">
+        <h3>📊 Charts</h3>
+        <p>A spending breakdown chart by category using a library like <code>react-native-gifted-charts</code>.</p>
+      </div>
+      <div class="card">
+        <h3>📆 Date Filtering</h3>
+        <p>Filter history by week / month / all time.</p>
+      </div>
+      <div class="card">
+        <h3>🌐 Backend</h3>
+        <p>Swap AsyncStorage for an API call. The storage layer is isolated in <code>storage.ts</code> — easy to replace.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Expense Tracker · React Native · Built with Expo &amp; TypeScript · May 2026
+</footer>
+
+</body>
+</html>
