@@ -23,6 +23,7 @@ import IncomeForm from "@/components/IncomeForm";
 import TransferForm from "@/components/TransferForm";
 import ExpenseRow from "@/components/ExpenseRow";
 import RangePicker from "@/components/RangePicker";
+import AnalysisPanel from "@/components/AnalysisPanel";
 
 export default function Dashboard() {
   const [expenses, setExpenses]   = useState<Expense[]>([]);
@@ -256,6 +257,23 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* AI Analysis */}
+      <AnalysisPanel
+        data={{
+          period: activeRange.label,
+          totalExpenses: periodTotal,
+          totalIncome: periodIncome,
+          days,
+          dailyAvg,
+          categoryBreakdown: categoryData,
+          topExpenses: [...periodExpenses]
+            .sort((a, b) => b.amount - a.amount)
+            .slice(0, 5)
+            .map((e) => ({ note: e.note, amount: e.amount, category: e.category, date: e.date })),
+          accountBalances,
+        }}
+      />
 
       {showExpenseForm && (
         <ExpenseForm
