@@ -202,24 +202,24 @@ export default function Dashboard() {
 
       {/* Charts */}
       <div className="grid grid-cols-2 gap-6 mb-6">
-        <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
+        <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)", border: "1px solid var(--c-card-outline)" }}>
           <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--c-t2)" }}>{spendingChartTitle}</h2>
           <SpendingChart data={spendingData} />
         </div>
-        <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
+        <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)", border: "1px solid var(--c-card-outline)" }}>
           <h2 className="text-sm font-semibold mb-2" style={{ color: "var(--c-t2)" }}>Spending by Category</h2>
           <CategoryChart data={categoryData} />
         </div>
       </div>
 
       {/* Trend Chart */}
-      <div className="rounded-2xl p-5 mb-8" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
+      <div className="rounded-2xl p-5 mb-8" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)", border: "1px solid var(--c-card-outline)" }}>
         <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--c-t2)" }}>Income vs Expenses — Last 6 Months</h2>
         <TrendChart data={trendData} />
       </div>
 
       {/* Recent Expenses */}
-      <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
+      <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)", border: "1px solid var(--c-card-outline)" }}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold" style={{ color: "var(--c-t2)" }}>
             Recent Expenses

@@ -13,7 +13,7 @@ export default function AccountCard({ account, balance }: Props) {
   return (
     <div
       className="rounded-2xl p-4 flex flex-col gap-3"
-      style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}
+      style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)", border: "1px solid var(--c-card-outline)" }}
     >
       <div className="flex items-center gap-2.5">
         <div

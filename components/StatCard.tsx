@@ -12,7 +12,7 @@ export default function StatCard({ label, value, sub, accent }: Props) {
       style={{
         backgroundColor: accent ? "var(--c-accent-bg)" : "var(--c-card)",
         boxShadow: accent ? "none" : "var(--c-shadow)",
-        border: accent ? "1px solid var(--c-accent-border)" : "none",
+        border: accent ? "1px solid var(--c-accent-border)" : "1px solid var(--c-card-outline)",
       }}
     >
       <p className="text-sm font-medium" style={{ color: "var(--c-t2)" }}>{label}</p>
