@@ -33,6 +33,10 @@
   --c-accent-bg:     #fffceb;
   --c-accent-border: #fde047;
   --c-accent-text:   #92620a;
+
+  /* Featured stat card */
+  --c-featured-bg:   #fef6e0;
+  --c-featured-text: #92620a;
 }
 
 /* ── Dark mode ──────────────────────────────────────────────── */
@@ -68,6 +72,10 @@
   --c-accent-bg:     rgba(255, 204, 0, 0.12);
   --c-accent-border: rgba(255, 204, 0, 0.35);
   --c-accent-text:   #ffcc00;
+
+  /* Featured stat card */
+  --c-featured-bg:   rgba(255, 204, 0, 0.08);
+  --c-featured-text: #ffcc00;
 }
 
 body {

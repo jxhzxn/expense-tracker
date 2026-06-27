@@ -189,6 +189,7 @@ export default function Dashboard() {
           label="Period Expenses"
           value={formatCurrency(periodTotal)}
           sub={`${periodExpenses.length} expense${periodExpenses.length !== 1 ? "s" : ""}`}
+          featured
         />
         <StatCard
           label="Period Income"
