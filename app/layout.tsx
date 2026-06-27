@@ -35,7 +35,7 @@ export default function RootLayout({
           <nav className="bg-[var(--c-nav)] backdrop-blur-md sticky top-0 z-40" style={{ borderBottom: "1px solid var(--c-border)", boxShadow: "0 1px 0 var(--c-border), 0 4px 12px rgba(0,0,0,0.04)" }}>
             <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
               <Link href="/" className="font-semibold text-[var(--c-t1)] flex items-center gap-2">
-                <span className="text-indigo-500 text-lg">RM</span>
+                <span className="text-lg font-bold" style={{ color: "#FFCC00" }}>RM</span>
                 <span>Expense Tracker</span>
               </Link>
               <div className="flex items-center gap-1">

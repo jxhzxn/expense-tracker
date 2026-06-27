@@ -29,10 +29,10 @@
   --c-shadow:    0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.09);
   --c-shadow-lg: 0 4px 16px rgba(0,0,0,0.10), 0 20px 48px rgba(0,0,0,0.15);
 
-  /* Accent (indigo) */
-  --c-accent-bg:     #eef2ff;
-  --c-accent-border: #c7d2fe;
-  --c-accent-text:   #4f46e5;
+  /* Accent (DHL yellow) */
+  --c-accent-bg:     #fffceb;
+  --c-accent-border: #fde047;
+  --c-accent-text:   #92620a;
 }
 
 /* ── Dark mode ──────────────────────────────────────────────── */
@@ -64,10 +64,10 @@
   --c-shadow:    0 1px 3px rgba(0,0,0,0.35), 0 4px 14px rgba(0,0,0,0.25);
   --c-shadow-lg: 0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35);
 
-  /* Accent */
-  --c-accent-bg:     rgba(99, 102, 241, 0.12);
-  --c-accent-border: rgba(99, 102, 241, 0.28);
-  --c-accent-text:   #818cf8;
+  /* Accent (DHL yellow) */
+  --c-accent-bg:     rgba(255, 204, 0, 0.12);
+  --c-accent-border: rgba(255, 204, 0, 0.35);
+  --c-accent-text:   #ffcc00;
 }
 
 body {

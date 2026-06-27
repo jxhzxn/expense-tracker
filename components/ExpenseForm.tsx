@@ -9,7 +9,7 @@ interface Props {
   onClose: () => void;
 }
 
-const inputClass = "w-full bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-2.5 text-[var(--c-t1)] placeholder-[var(--c-t3)] focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-colors";
+const inputClass = "w-full bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-2.5 text-[var(--c-t1)] placeholder-[var(--c-t3)] focus:outline-none focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 transition-colors";
 
 export default function ExpenseForm({ expense, onSave, onClose }: Props) {
   const today = new Date().toISOString().slice(0, 10);
@@ -101,7 +101,10 @@ export default function ExpenseForm({ expense, onSave, onClose }: Props) {
             </button>
             <button
               type="submit"
-              className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition-colors"
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+              style={{ backgroundColor: "#FFCC00", color: "#1a1200" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E6B800")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#FFCC00")}
             >
               {expense ? "Save Changes" : "Add Expense"}
             </button>

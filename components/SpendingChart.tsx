@@ -52,7 +52,7 @@ export default function SpendingChart({ data }: Props) {
           width={60}
         />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(99,102,241,0.08)" }} />
-        <Bar dataKey="total" fill="#6366f1" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="total" fill="#FFCC00" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -17,7 +17,7 @@ const MODES: { key: RangeMode; label: string }[] = [
   { key: "custom",     label: "Custom" },
 ];
 
-const dateInputClass = "bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-1.5 text-sm text-[var(--c-t1)] focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-colors";
+const dateInputClass = "bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-1.5 text-sm text-[var(--c-t1)] focus:outline-none focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 transition-colors";
 
 export default function RangePicker({ mode, customStart, customEnd, rangeLabel, onChange }: Props) {
   return (
@@ -32,10 +32,13 @@ export default function RangePicker({ mode, customStart, customEnd, rangeLabel, 
             onClick={() => onChange(m.key)}
             className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               mode === m.key
-                ? "bg-indigo-600 text-white shadow-sm"
+                ? "shadow-sm"
                 : "hover:bg-[var(--c-card)]"
             }`}
-            style={{ color: mode === m.key ? "white" : "var(--c-t2)" }}
+            style={mode === m.key
+              ? { backgroundColor: "#FFCC00", color: "#1a1200" }
+              : { color: "var(--c-t2)" }
+            }
           >
             {m.label}
           </button>

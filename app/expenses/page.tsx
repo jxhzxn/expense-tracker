@@ -15,7 +15,7 @@ import ExpenseRow from "@/components/ExpenseRow";
 
 type Tab = "expenses" | "income" | "transfers";
 
-const inputClass = "bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-2 text-sm text-[var(--c-t1)] focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-colors";
+const inputClass = "bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-2 text-sm text-[var(--c-t1)] focus:outline-none focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 transition-colors";
 
 export default function TransactionsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("expenses");
@@ -141,7 +141,10 @@ export default function TransactionsPage() {
         {activeTab === "expenses" && (
           <button
             onClick={() => { setEditExpense(null); setShowExpenseForm(true); }}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm transition-colors"
+            style={{ backgroundColor: "#FFCC00", color: "#1a1200" }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E6B800")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#FFCC00")}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

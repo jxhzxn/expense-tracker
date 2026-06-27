@@ -46,7 +46,7 @@ export default function TrendChart({ data }: Props) {
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
         <Legend formatter={(value) => <span className="text-[var(--c-t2)] text-xs capitalize">{value}</span>} />
         <Bar dataKey="income"  name="Income"   fill="#22c55e" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="expense" name="Expenses" fill="#6366f1" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="expense" name="Expenses" fill="#FFCC00" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
