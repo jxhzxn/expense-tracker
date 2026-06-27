@@ -1,41 +1,71 @@
 "use client";
 
-import { Expense } from "./types";
+import { Expense, Income, Transfer } from "./types";
 
-const KEY = "expense-tracker-v1";
+const KEYS = {
+  expenses: "expense-tracker-v1",
+  income:   "expense-tracker-income-v1",
+  transfers:"expense-tracker-transfers-v1",
+};
 
-export function getExpenses(): Expense[] {
+function read<T>(key: string): T[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
-export function saveExpenses(expenses: Expense[]): void {
-  localStorage.setItem(KEY, JSON.stringify(expenses));
+function write<T>(key: string, data: T[]): void {
+  localStorage.setItem(key, JSON.stringify(data));
 }
+
+// ── Expenses ──────────────────────────────────────────────
+export function getExpenses(): Expense[] { return read<Expense>(KEYS.expenses); }
 
 export function addExpense(expense: Omit<Expense, "id" | "createdAt">): Expense {
   const expenses = getExpenses();
-  const newExpense: Expense = {
-    ...expense,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-  };
-  saveExpenses([newExpense, ...expenses]);
-  return newExpense;
+  const item: Expense = { ...expense, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
+  write(KEYS.expenses, [item, ...expenses]);
+  return item;
 }
 
 export function updateExpense(id: string, data: Omit<Expense, "id" | "createdAt">): void {
-  const expenses = getExpenses();
-  const updated = expenses.map((e) => (e.id === id ? { ...e, ...data } : e));
-  saveExpenses(updated);
+  write(KEYS.expenses, getExpenses().map((e) => (e.id === id ? { ...e, ...data } : e)));
 }
 
 export function deleteExpense(id: string): void {
-  const expenses = getExpenses();
-  saveExpenses(expenses.filter((e) => e.id !== id));
+  write(KEYS.expenses, getExpenses().filter((e) => e.id !== id));
+}
+
+// ── Income ────────────────────────────────────────────────
+export function getIncomes(): Income[] { return read<Income>(KEYS.income); }
+
+export function addIncome(income: Omit<Income, "id" | "createdAt">): Income {
+  const incomes = getIncomes();
+  const item: Income = { ...income, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
+  write(KEYS.income, [item, ...incomes]);
+  return item;
+}
+
+export function updateIncome(id: string, data: Omit<Income, "id" | "createdAt">): void {
+  write(KEYS.income, getIncomes().map((i) => (i.id === id ? { ...i, ...data } : i)));
+}
+
+export function deleteIncome(id: string): void {
+  write(KEYS.income, getIncomes().filter((i) => i.id !== id));
+}
+
+// ── Transfers ─────────────────────────────────────────────
+export function getTransfers(): Transfer[] { return read<Transfer>(KEYS.transfers); }
+
+export function addTransfer(transfer: Omit<Transfer, "id" | "createdAt">): Transfer {
+  const transfers = getTransfers();
+  const item: Transfer = { ...transfer, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
+  write(KEYS.transfers, [item, ...transfers]);
+  return item;
+}
+
+export function deleteTransfer(id: string): void {
+  write(KEYS.transfers, getTransfers().filter((t) => t.id !== id));
 }

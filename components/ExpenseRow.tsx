@@ -1,6 +1,6 @@
 "use client";
 
-import { Expense, CATEGORY_COLORS } from "@/lib/types";
+import { Expense, CATEGORY_COLORS, ACCOUNT_COLORS } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
 
 export default function ExpenseRow({ expense, onEdit, onDelete }: Props) {
   const color = CATEGORY_COLORS[expense.category] ?? "#6b7280";
+  const accountColor = expense.account ? ACCOUNT_COLORS[expense.account] : null;
 
   return (
     <div className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[var(--c-hover)] transition-colors group">
@@ -19,9 +20,19 @@ export default function ExpenseRow({ expense, onEdit, onDelete }: Props) {
         <p className="text-[var(--c-t1)] text-sm font-medium truncate">
           {expense.note || expense.category}
         </p>
-        <p className="text-[var(--c-t3)] text-xs">
-          {expense.category} · {formatDate(expense.date)}
-        </p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <p className="text-[var(--c-t3)] text-xs">
+            {expense.category} · {formatDate(expense.date)}
+          </p>
+          {expense.account && accountColor && (
+            <span
+              className="text-xs px-1.5 py-0.5 rounded-md font-medium leading-none"
+              style={{ backgroundColor: `${accountColor}20`, color: accountColor }}
+            >
+              {expense.account}
+            </span>
+          )}
+        </div>
       </div>
       <span className="text-[var(--c-t1)] font-semibold text-sm flex-shrink-0">
         {formatCurrency(expense.amount)}

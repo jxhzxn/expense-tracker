@@ -48,7 +48,7 @@ export default function RootLayout({
                   href="/expenses"
                   className="px-3 py-1.5 text-sm text-[var(--c-t2)] hover:text-[var(--c-t1)] rounded-lg hover:bg-[var(--c-hover)] transition-colors"
                 >
-                  Expenses
+                  Transactions
                 </Link>
                 <div className="w-px h-5 bg-[var(--c-border)] mx-1" />
                 <ThemeToggle />

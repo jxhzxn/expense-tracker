@@ -2,29 +2,50 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { Expense } from "@/lib/types";
-import { getExpenses, addExpense, updateExpense, deleteExpense } from "@/lib/storage";
-import { formatCurrency, sumByCategory, groupByMonth, groupByDay } from "@/lib/utils";
+import { Expense, Income, Transfer, ACCOUNTS } from "@/lib/types";
+import {
+  getExpenses, addExpense, updateExpense, deleteExpense,
+  getIncomes, addIncome, updateIncome, deleteIncome,
+  getTransfers, addTransfer,
+} from "@/lib/storage";
+import {
+  formatCurrency, sumByCategory, groupByMonth, groupByDay,
+  groupByMonthTrend, getAccountBalances,
+} from "@/lib/utils";
 import { RangeMode, getRangeForMode, daysBetween } from "@/lib/dateRange";
 import StatCard from "@/components/StatCard";
 import CategoryChart from "@/components/CategoryChart";
 import SpendingChart from "@/components/SpendingChart";
+import TrendChart from "@/components/TrendChart";
+import AccountCard from "@/components/AccountCard";
 import ExpenseForm from "@/components/ExpenseForm";
+import IncomeForm from "@/components/IncomeForm";
+import TransferForm from "@/components/TransferForm";
 import ExpenseRow from "@/components/ExpenseRow";
 import RangePicker from "@/components/RangePicker";
 
 export default function Dashboard() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editTarget, setEditTarget] = useState<Expense | null>(null);
+  const [expenses, setExpenses]   = useState<Expense[]>([]);
+  const [incomes, setIncomes]     = useState<Income[]>([]);
+  const [transfers, setTransfers] = useState<Transfer[]>([]);
+
+  const [showExpenseForm, setShowExpenseForm]   = useState(false);
+  const [editExpense, setEditExpense]           = useState<Expense | null>(null);
+  const [showIncomeForm, setShowIncomeForm]     = useState(false);
+  const [editIncome, setEditIncome]             = useState<Income | null>(null);
+  const [showTransferForm, setShowTransferForm] = useState(false);
 
   const today = new Date().toISOString().slice(0, 10);
-  const [rangeMode, setRangeMode] = useState<RangeMode>("payperiod");
+  const [rangeMode, setRangeMode]   = useState<RangeMode>("payperiod");
   const [customStart, setCustomStart] = useState(today);
-  const [customEnd, setCustomEnd] = useState(today);
+  const [customEnd, setCustomEnd]     = useState(today);
 
-  const load = useCallback(() => setExpenses(getExpenses()), []);
-  useEffect(() => { load(); }, [load]);
+  const loadAll = useCallback(() => {
+    setExpenses(getExpenses());
+    setIncomes(getIncomes());
+    setTransfers(getTransfers());
+  }, []);
+  useEffect(() => { loadAll(); }, [loadAll]);
 
   const activeRange = useMemo(
     () => getRangeForMode(rangeMode, customStart, customEnd),
@@ -42,10 +63,25 @@ export default function Dashboard() {
     [expenses, activeRange]
   );
 
-  const periodTotal = periodExpenses.reduce((s, e) => s + e.amount, 0);
-  const allTotal = expenses.reduce((s, e) => s + e.amount, 0);
-  const days = daysBetween(activeRange.start, activeRange.end);
-  const dailyAvg = periodTotal / days;
+  const periodIncomes = useMemo(
+    () => incomes.filter((i) => i.date >= activeRange.start && i.date <= activeRange.end),
+    [incomes, activeRange]
+  );
+
+  const periodTotal  = periodExpenses.reduce((s, e) => s + e.amount, 0);
+  const periodIncome = periodIncomes.reduce((s, i) => s + i.amount, 0);
+  const days         = daysBetween(activeRange.start, activeRange.end);
+  const dailyAvg     = periodTotal / days;
+
+  const accountBalances = useMemo(
+    () => getAccountBalances(incomes, transfers, expenses),
+    [incomes, transfers, expenses]
+  );
+
+  const trendData = useMemo(
+    () => groupByMonthTrend(expenses, incomes),
+    [expenses, incomes]
+  );
 
   const categoryData = Object.entries(sumByCategory(periodExpenses))
     .map(([name, value]) => ({ name, value }))
@@ -55,52 +91,85 @@ export default function Dashboard() {
     if (rangeMode === "week" || rangeMode === "payperiod" || rangeMode === "lastperiod") {
       return groupByDay(periodExpenses, activeRange.start, activeRange.end);
     }
-    const rangeDays = daysBetween(activeRange.start, activeRange.end);
-    return rangeDays <= 35
+    return daysBetween(activeRange.start, activeRange.end) <= 35
       ? groupByDay(periodExpenses, activeRange.start, activeRange.end)
       : groupByMonth(periodExpenses);
   }, [rangeMode, periodExpenses, activeRange]);
 
   const spendingChartTitle =
-    rangeMode === "week"
-      ? "Daily Spending (This Week)"
-      : rangeMode === "payperiod" || rangeMode === "lastperiod"
-      ? "Daily Spending (Pay Period)"
-      : "Spending Over Time";
+    rangeMode === "week" ? "Daily Spending (This Week)"
+    : rangeMode === "payperiod" || rangeMode === "lastperiod" ? "Daily Spending (Pay Period)"
+    : "Spending Over Time";
 
-  function handleSave(data: Omit<Expense, "id" | "createdAt">) {
-    if (editTarget) {
-      updateExpense(editTarget.id, data);
-    } else {
-      addExpense(data);
-    }
-    setShowForm(false);
-    setEditTarget(null);
-    load();
+  function handleSaveExpense(data: Omit<Expense, "id" | "createdAt">) {
+    if (editExpense) updateExpense(editExpense.id, data);
+    else addExpense(data);
+    setShowExpenseForm(false);
+    setEditExpense(null);
+    loadAll();
   }
 
-  function handleDelete(id: string) {
-    deleteExpense(id);
-    load();
+  function handleSaveIncome(data: Omit<Income, "id" | "createdAt">) {
+    if (editIncome) updateIncome(editIncome.id, data);
+    else addIncome(data);
+    setShowIncomeForm(false);
+    setEditIncome(null);
+    loadAll();
+  }
+
+  function handleSaveTransfer(data: Omit<Transfer, "id" | "createdAt">) {
+    addTransfer(data);
+    setShowTransferForm(false);
+    loadAll();
   }
 
   const recentInPeriod = periodExpenses.slice(0, 5);
 
   return (
     <>
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[var(--c-t1)]">Dashboard</h1>
-        <button
-          onClick={() => { setEditTarget(null); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add Expense
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowTransferForm(true)}
+            className="flex items-center gap-2 px-4 py-2 border text-[var(--c-t2)] hover:text-[var(--c-t1)] hover:bg-[var(--c-hover)] rounded-xl font-medium text-sm transition-colors"
+            style={{ borderColor: "var(--c-border)" }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            Transfer
+          </button>
+          <button
+            onClick={() => { setEditIncome(null); setShowIncomeForm(true); }}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium text-sm transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Income
+          </button>
+          <button
+            onClick={() => { setEditExpense(null); setShowExpenseForm(true); }}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Expense
+          </button>
+        </div>
       </div>
 
+      {/* Account Balances */}
+      <div className="grid grid-cols-4 gap-3 mb-8">
+        {ACCOUNTS.map((account) => (
+          <AccountCard key={account} account={account} balance={accountBalances[account]} />
+        ))}
+      </div>
+
+      {/* Range Picker */}
       <div className="mb-8">
         <RangePicker
           mode={rangeMode}
@@ -111,13 +180,28 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Period Stats */}
       <div className="grid grid-cols-3 gap-4 mb-8">
-        <StatCard label="Period Total" value={formatCurrency(periodTotal)} sub={`${periodExpenses.length} expense${periodExpenses.length !== 1 ? "s" : ""}`} accent />
-        <StatCard label="All Time" value={formatCurrency(allTotal)} sub={`${expenses.length} total expense${expenses.length !== 1 ? "s" : ""}`} />
-        <StatCard label="Daily Avg" value={formatCurrency(dailyAvg)} sub={`over ${days} day${days !== 1 ? "s" : ""}`} />
+        <StatCard
+          label="Period Expenses"
+          value={formatCurrency(periodTotal)}
+          sub={`${periodExpenses.length} expense${periodExpenses.length !== 1 ? "s" : ""}`}
+          accent
+        />
+        <StatCard
+          label="Period Income"
+          value={formatCurrency(periodIncome)}
+          sub={`${periodIncomes.length} income entr${periodIncomes.length !== 1 ? "ies" : "y"}`}
+        />
+        <StatCard
+          label="Daily Avg (Expenses)"
+          value={formatCurrency(dailyAvg)}
+          sub={`over ${days} day${days !== 1 ? "s" : ""}`}
+        />
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-8">
+      {/* Charts */}
+      <div className="grid grid-cols-2 gap-6 mb-6">
         <div className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
           <h2 className="text-sm font-medium text-[var(--c-t2)] mb-4">{spendingChartTitle}</h2>
           <SpendingChart data={spendingData} />
@@ -128,6 +212,13 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Trend Chart */}
+      <div className="rounded-2xl p-5 border mb-8" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+        <h2 className="text-sm font-medium text-[var(--c-t2)] mb-4">Income vs Expenses — Last 6 Months</h2>
+        <TrendChart data={trendData} />
+      </div>
+
+      {/* Recent Expenses */}
       <div className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-medium text-[var(--c-t2)]">
@@ -142,7 +233,7 @@ export default function Dashboard() {
           <div className="text-center py-12">
             <p className="text-[var(--c-t3)] text-sm">No expenses in this period.</p>
             <button
-              onClick={() => { setEditTarget(null); setShowForm(true); }}
+              onClick={() => { setEditExpense(null); setShowExpenseForm(true); }}
               className="mt-3 text-sm transition-colors"
               style={{ color: "var(--c-accent-text)" }}
             >
@@ -152,17 +243,35 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-1">
             {recentInPeriod.map((e) => (
-              <ExpenseRow key={e.id} expense={e} onEdit={(exp) => { setEditTarget(exp); setShowForm(true); }} onDelete={handleDelete} />
+              <ExpenseRow
+                key={e.id}
+                expense={e}
+                onEdit={(exp) => { setEditExpense(exp); setShowExpenseForm(true); }}
+                onDelete={(id) => { deleteExpense(id); loadAll(); }}
+              />
             ))}
           </div>
         )}
       </div>
 
-      {showForm && (
+      {showExpenseForm && (
         <ExpenseForm
-          expense={editTarget}
-          onSave={handleSave}
-          onClose={() => { setShowForm(false); setEditTarget(null); }}
+          expense={editExpense}
+          onSave={handleSaveExpense}
+          onClose={() => { setShowExpenseForm(false); setEditExpense(null); }}
+        />
+      )}
+      {showIncomeForm && (
+        <IncomeForm
+          income={editIncome}
+          onSave={handleSaveIncome}
+          onClose={() => { setShowIncomeForm(false); setEditIncome(null); }}
+        />
+      )}
+      {showTransferForm && (
+        <TransferForm
+          onSave={handleSaveTransfer}
+          onClose={() => setShowTransferForm(false)}
         />
       )}
     </>
