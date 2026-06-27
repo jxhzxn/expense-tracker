@@ -1,13 +1,14 @@
 "use client";
 
-import { Expense, Income, Transfer } from "./types";
+import { Expense, Income, Transfer, AccountType, AccountConfig, ACCOUNTS, DEFAULT_ACCOUNT_CONFIGS } from "./types";
 
 const KEYS = {
-  expenses:    "expense-tracker-v1",
-  income:      "expense-tracker-income-v1",
-  transfers:   "expense-tracker-transfers-v1",
-  categories:  "expense-tracker-categories-v1",
-  balanceAdj:  "expense-tracker-balance-adj-v1",
+  expenses:       "expense-tracker-v1",
+  income:         "expense-tracker-income-v1",
+  transfers:      "expense-tracker-transfers-v1",
+  categories:     "expense-tracker-categories-v1",
+  balanceAdj:     "expense-tracker-balance-adj-v1",
+  accountConfigs: "expense-tracker-account-configs-v1",
 };
 
 export const DEFAULT_CATEGORIES = [
@@ -106,6 +107,25 @@ export function saveBalanceAdjustments(adj: Record<string, number>): void {
   localStorage.setItem(KEYS.balanceAdj, JSON.stringify(adj));
 }
 
+// ── Account Configs ───────────────────────────────────────────
+export function getAccountConfigs(): Record<AccountType, AccountConfig> {
+  if (typeof window === "undefined") return { ...DEFAULT_ACCOUNT_CONFIGS };
+  try {
+    const raw = localStorage.getItem(KEYS.accountConfigs);
+    if (!raw) return { ...DEFAULT_ACCOUNT_CONFIGS };
+    const stored = JSON.parse(raw) as Partial<Record<AccountType, AccountConfig>>;
+    return Object.fromEntries(
+      ACCOUNTS.map((a) => [a, stored[a] ?? DEFAULT_ACCOUNT_CONFIGS[a]])
+    ) as Record<AccountType, AccountConfig>;
+  } catch {
+    return { ...DEFAULT_ACCOUNT_CONFIGS };
+  }
+}
+
+export function saveAccountConfigs(configs: Record<AccountType, AccountConfig>): void {
+  localStorage.setItem(KEYS.accountConfigs, JSON.stringify(configs));
+}
+
 // ── Export / Import ───────────────────────────────────────────
 export function exportAllData(): string {
   return JSON.stringify(
@@ -117,6 +137,7 @@ export function exportAllData(): string {
       transfers: getTransfers(),
       categories: getCategories(),
       balanceAdjustments: getBalanceAdjustments(),
+      accountConfigs: getAccountConfigs(),
     },
     null,
     2
@@ -132,6 +153,9 @@ export function importAllData(json: string): void {
   if (Array.isArray(data.categories)) localStorage.setItem(KEYS.categories, JSON.stringify(data.categories));
   if (data.balanceAdjustments && typeof data.balanceAdjustments === "object") {
     localStorage.setItem(KEYS.balanceAdj, JSON.stringify(data.balanceAdjustments));
+  }
+  if (data.accountConfigs && typeof data.accountConfigs === "object") {
+    localStorage.setItem(KEYS.accountConfigs, JSON.stringify(data.accountConfigs));
   }
 }
 

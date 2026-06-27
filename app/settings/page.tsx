@@ -5,8 +5,11 @@ import { useTheme } from "@/components/ThemeProvider";
 import {
   getCategories, saveCategories,
   exportAllData, importAllData, clearAllData,
+  getAccountConfigs, saveAccountConfigs,
 } from "@/lib/storage";
 import { getCategoryColor } from "@/lib/utils";
+import { ACCOUNTS, ACCOUNT_DESC, AccountType, AccountConfig } from "@/lib/types";
+import AccountIcon, { ICON_KEYS, ICON_LABELS } from "@/components/AccountIcon";
 
 // ── Shared card wrapper ───────────────────────────────────────
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -265,6 +268,138 @@ function DataSection() {
   );
 }
 
+// ── Accounts ──────────────────────────────────────────────────
+const PRESET_COLORS = [
+  "#22c55e", "#3b82f6", "#f97316", "#a855f7",
+  "#ec4899", "#eab308", "#06b6d4", "#ef4444",
+  "#6366f1", "#14b8a6", "#f59e0b", "#6b7280",
+];
+
+function AccountsSection() {
+  const [configs, setConfigs] = useState<Record<AccountType, AccountConfig>>(
+    () => getAccountConfigs()
+  );
+  const [open, setOpen] = useState<AccountType | null>(null);
+
+  function update(account: AccountType, patch: Partial<AccountConfig>) {
+    const next = { ...configs, [account]: { ...configs[account], ...patch } };
+    setConfigs(next);
+    saveAccountConfigs(next);
+  }
+
+  function toggle(account: AccountType) {
+    setOpen((prev) => (prev === account ? null : account));
+  }
+
+  return (
+    <Section title="Accounts">
+      {ACCOUNTS.map((account, i) => {
+        const cfg = configs[account];
+        const isOpen = open === account;
+        return (
+          <div key={account}>
+            <div
+              className="flex items-center gap-3 py-3"
+              style={i > 0 ? { borderTop: "1px solid var(--c-card-outline)" } : undefined}
+            >
+              {/* Icon button */}
+              <button
+                onClick={() => toggle(account)}
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors hover:opacity-80"
+                style={{ backgroundColor: `${cfg.color}20` }}
+                title="Change icon or color"
+              >
+                <AccountIcon icon={cfg.icon} color={cfg.color} size={18} />
+              </button>
+
+              {/* Name + desc */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate" style={{ color: "var(--c-t1)" }}>{account}</p>
+                <p className="text-xs truncate" style={{ color: "var(--c-t3)" }}>{ACCOUNT_DESC[account]}</p>
+              </div>
+
+              {/* Color swatch */}
+              <button
+                onClick={() => toggle(account)}
+                className="w-5 h-5 rounded-full flex-shrink-0 ring-2 ring-offset-2 transition-all hover:scale-110"
+                style={{
+                  backgroundColor: cfg.color,
+                  outline: isOpen ? `2px solid ${cfg.color}` : "2px solid transparent",
+                  outlineOffset: 2,
+                }}
+                title="Change color"
+              />
+            </div>
+
+            {/* Expanded editor */}
+            {isOpen && (
+              <div
+                className="mb-3 rounded-xl p-4 space-y-4"
+                style={{ backgroundColor: "var(--c-subtle, var(--c-input))", border: "1px solid var(--c-card-outline)" }}
+              >
+                {/* Icon grid */}
+                <div>
+                  <p className="text-xs font-medium mb-2.5" style={{ color: "var(--c-t3)" }}>Icon</p>
+                  <div className="grid grid-cols-6 gap-2">
+                    {ICON_KEYS.map((key) => {
+                      const active = cfg.icon === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => update(account, { icon: key })}
+                          title={ICON_LABELS[key]}
+                          className="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105"
+                          style={{
+                            backgroundColor: active ? `${cfg.color}25` : "var(--c-card)",
+                            border: active ? `1.5px solid ${cfg.color}` : "1.5px solid transparent",
+                          }}
+                        >
+                          <AccountIcon icon={key} color={active ? cfg.color : "var(--c-t3)"} size={17} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Color presets + custom */}
+                <div>
+                  <p className="text-xs font-medium mb-2.5" style={{ color: "var(--c-t3)" }}>Color</p>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {PRESET_COLORS.map((color) => {
+                      const active = cfg.color === color;
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => update(account, { color })}
+                          className="w-7 h-7 rounded-full transition-all hover:scale-110"
+                          style={{
+                            backgroundColor: color,
+                            outline: active ? `2px solid ${color}` : "2px solid transparent",
+                            outlineOffset: 2,
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <span className="text-xs" style={{ color: "var(--c-t3)" }}>Custom</span>
+                    <input
+                      type="color"
+                      value={cfg.color}
+                      onChange={(e) => update(account, { color: e.target.value })}
+                      className="h-7 w-14 rounded-lg cursor-pointer border-0 bg-transparent p-0"
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </Section>
+  );
+}
+
 // ── Danger zone ───────────────────────────────────────────────
 function DangerSection() {
   const [step, setStep] = useState<"idle" | "warn" | "confirm">("idle");
@@ -355,6 +490,7 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold text-[var(--c-t1)] mb-6 max-w-2xl mx-auto">Settings</h1>
       <div className="max-w-2xl mx-auto space-y-4">
         <AppearanceSection />
+        <AccountsSection />
         <CategoriesSection />
         <DataSection />
         <DangerSection />

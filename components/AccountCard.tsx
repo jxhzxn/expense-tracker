@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { AccountType, ACCOUNT_COLORS, ACCOUNT_DESC } from "@/lib/types";
+import { AccountType, ACCOUNT_DESC, AccountConfig } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
+import AccountIcon from "./AccountIcon";
 
 interface Props {
   account: AccountType;
   balance: number;
+  config: AccountConfig;
   onEdit: (account: AccountType, newBalance: number) => void;
 }
 
-export default function AccountCard({ account, balance, onEdit }: Props) {
-  const color = ACCOUNT_COLORS[account];
+export default function AccountCard({ account, balance, config, onEdit }: Props) {
+  const { color, icon } = config;
   const isNegative = balance < 0;
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState("");
@@ -42,7 +44,7 @@ export default function AccountCard({ account, balance, onEdit }: Props) {
           className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
           style={{ backgroundColor: `${color}18` }}
         >
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+          <AccountIcon icon={icon} color={color} size={16} />
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold truncate" style={{ color: "var(--c-t1)" }}>{account}</p>

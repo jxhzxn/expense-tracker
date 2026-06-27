@@ -8,7 +8,9 @@ import {
   getIncomes, addIncome, updateIncome, deleteIncome,
   getTransfers, addTransfer,
   getBalanceAdjustments, saveBalanceAdjustments,
+  getAccountConfigs,
 } from "@/lib/storage";
+import type { AccountConfig } from "@/lib/types";
 import {
   formatCurrency, sumByCategory, groupByMonth, groupByDay,
   groupByMonthTrend, getAccountBalances,
@@ -31,6 +33,7 @@ export default function Dashboard() {
   const [incomes, setIncomes]           = useState<Income[]>([]);
   const [transfers, setTransfers]       = useState<Transfer[]>([]);
   const [balanceAdj, setBalanceAdj]     = useState<Record<string, number>>({});
+  const [accountConfigs, setAccountConfigs] = useState<Record<string, AccountConfig>>(() => getAccountConfigs());
 
   const [showExpenseForm, setShowExpenseForm]   = useState(false);
   const [editExpense, setEditExpense]           = useState<Expense | null>(null);
@@ -48,6 +51,7 @@ export default function Dashboard() {
     setIncomes(getIncomes());
     setTransfers(getTransfers());
     setBalanceAdj(getBalanceAdjustments());
+    setAccountConfigs(getAccountConfigs());
   }, []);
   useEffect(() => { loadAll(); }, [loadAll]);
 
@@ -188,6 +192,7 @@ export default function Dashboard() {
             key={account}
             account={account}
             balance={accountBalances[account]}
+            config={accountConfigs[account]}
             onEdit={handleEditBalance}
           />
         ))}

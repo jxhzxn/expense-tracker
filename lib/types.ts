@@ -34,6 +34,18 @@ export const ACCOUNT_DESC: Record<AccountType, string> = {
   "TNG Transit":  "MRT / LRT / Bus · ~RM100/mo",
 };
 
+export interface AccountConfig {
+  color: string;
+  icon: string;
+}
+
+export const DEFAULT_ACCOUNT_CONFIGS: Record<AccountType, AccountConfig> = {
+  "Bank Savings": { color: "#22c55e", icon: "bank" },
+  "TNG Visa":     { color: "#6366f1", icon: "card" },
+  "Wise":         { color: "#0ea5e9", icon: "globe" },
+  "TNG Transit":  { color: "#f97316", icon: "train" },
+};
+
 export interface Expense {
   id: string;
   amount: number;
