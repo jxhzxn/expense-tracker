@@ -3,10 +3,11 @@
 import { Expense, Income, Transfer } from "./types";
 
 const KEYS = {
-  expenses:   "expense-tracker-v1",
-  income:     "expense-tracker-income-v1",
-  transfers:  "expense-tracker-transfers-v1",
-  categories: "expense-tracker-categories-v1",
+  expenses:    "expense-tracker-v1",
+  income:      "expense-tracker-income-v1",
+  transfers:   "expense-tracker-transfers-v1",
+  categories:  "expense-tracker-categories-v1",
+  balanceAdj:  "expense-tracker-balance-adj-v1",
 };
 
 export const DEFAULT_CATEGORIES = [
@@ -90,6 +91,48 @@ export function getCategories(): string[] {
 
 export function saveCategories(cats: string[]): void {
   write(KEYS.categories, cats);
+}
+
+// ── Balance Adjustments ───────────────────────────────────────
+export function getBalanceAdjustments(): Record<string, number> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(KEYS.balanceAdj);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+export function saveBalanceAdjustments(adj: Record<string, number>): void {
+  localStorage.setItem(KEYS.balanceAdj, JSON.stringify(adj));
+}
+
+// ── Export / Import ───────────────────────────────────────────
+export function exportAllData(): string {
+  return JSON.stringify(
+    {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      expenses: getExpenses(),
+      incomes: getIncomes(),
+      transfers: getTransfers(),
+      categories: getCategories(),
+      balanceAdjustments: getBalanceAdjustments(),
+    },
+    null,
+    2
+  );
+}
+
+export function importAllData(json: string): void {
+  const data = JSON.parse(json);
+  if (!data || typeof data !== "object") throw new Error("Invalid backup file");
+  if (Array.isArray(data.expenses))   localStorage.setItem(KEYS.expenses,   JSON.stringify(data.expenses));
+  if (Array.isArray(data.incomes))    localStorage.setItem(KEYS.income,     JSON.stringify(data.incomes));
+  if (Array.isArray(data.transfers))  localStorage.setItem(KEYS.transfers,  JSON.stringify(data.transfers));
+  if (Array.isArray(data.categories)) localStorage.setItem(KEYS.categories, JSON.stringify(data.categories));
+  if (data.balanceAdjustments && typeof data.balanceAdjustments === "object") {
+    localStorage.setItem(KEYS.balanceAdj, JSON.stringify(data.balanceAdjustments));
+  }
 }
 
 // ── Nuclear option ────────────────────────────────────────────

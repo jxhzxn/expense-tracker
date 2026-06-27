@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { Expense, Income, Transfer, ACCOUNTS } from "@/lib/types";
+import { Expense, Income, Transfer, ACCOUNTS, AccountType } from "@/lib/types";
 import {
   getExpenses, addExpense, updateExpense, deleteExpense,
   getIncomes, addIncome, updateIncome, deleteIncome,
   getTransfers, addTransfer,
+  getBalanceAdjustments, saveBalanceAdjustments,
 } from "@/lib/storage";
 import {
   formatCurrency, sumByCategory, groupByMonth, groupByDay,
@@ -26,9 +27,10 @@ import RangePicker from "@/components/RangePicker";
 import AnalysisPanel from "@/components/AnalysisPanel";
 
 export default function Dashboard() {
-  const [expenses, setExpenses]   = useState<Expense[]>([]);
-  const [incomes, setIncomes]     = useState<Income[]>([]);
-  const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [expenses, setExpenses]         = useState<Expense[]>([]);
+  const [incomes, setIncomes]           = useState<Income[]>([]);
+  const [transfers, setTransfers]       = useState<Transfer[]>([]);
+  const [balanceAdj, setBalanceAdj]     = useState<Record<string, number>>({});
 
   const [showExpenseForm, setShowExpenseForm]   = useState(false);
   const [editExpense, setEditExpense]           = useState<Expense | null>(null);
@@ -45,6 +47,7 @@ export default function Dashboard() {
     setExpenses(getExpenses());
     setIncomes(getIncomes());
     setTransfers(getTransfers());
+    setBalanceAdj(getBalanceAdjustments());
   }, []);
   useEffect(() => { loadAll(); }, [loadAll]);
 
@@ -74,10 +77,22 @@ export default function Dashboard() {
   const days         = daysBetween(activeRange.start, activeRange.end);
   const dailyAvg     = periodTotal / days;
 
-  const accountBalances = useMemo(
+  const rawBalances = useMemo(
     () => getAccountBalances(incomes, transfers, expenses),
     [incomes, transfers, expenses]
   );
+
+  const accountBalances = useMemo(
+    () => getAccountBalances(incomes, transfers, expenses, balanceAdj),
+    [incomes, transfers, expenses, balanceAdj]
+  );
+
+  function handleEditBalance(account: AccountType, newBalance: number) {
+    const rawBalance = rawBalances[account];
+    const updated = { ...balanceAdj, [account]: newBalance - rawBalance };
+    setBalanceAdj(updated);
+    saveBalanceAdjustments(updated);
+  }
 
   const trendData = useMemo(
     () => groupByMonthTrend(expenses, incomes),
@@ -169,7 +184,12 @@ export default function Dashboard() {
       {/* Account Balances */}
       <div className="grid grid-cols-4 gap-3 mb-8">
         {ACCOUNTS.map((account) => (
-          <AccountCard key={account} account={account} balance={accountBalances[account]} />
+          <AccountCard
+            key={account}
+            account={account}
+            balance={accountBalances[account]}
+            onEdit={handleEditBalance}
+          />
         ))}
       </div>
 

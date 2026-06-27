@@ -3,8 +3,6 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import ThemeToggle from "@/components/ThemeToggle";
-import ResetDataButton from "@/components/ResetDataButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,9 +49,12 @@ export default function RootLayout({
                 >
                   Transactions
                 </Link>
-                <div className="w-px h-5 bg-[var(--c-border)] mx-1" />
-                <ResetDataButton />
-                <ThemeToggle />
+                <Link
+                  href="/settings"
+                  className="px-3 py-1.5 text-sm text-[var(--c-t2)] hover:text-[var(--c-t1)] rounded-lg hover:bg-[var(--c-hover)] transition-colors"
+                >
+                  Settings
+                </Link>
               </div>
             </div>
           </nav>

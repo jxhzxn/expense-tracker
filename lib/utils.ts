@@ -99,15 +99,17 @@ export function groupByMonthTrend(
   }));
 }
 
-/** Current balance per account */
+/** Current balance per account, with optional manual adjustments applied */
 export function getAccountBalances(
   incomes: Income[],
   transfers: Transfer[],
-  expenses: Expense[]
+  expenses: Expense[],
+  adjustments: Record<string, number> = {}
 ): Record<AccountType, number> {
   const bal = Object.fromEntries(ACCOUNTS.map((a) => [a, 0])) as Record<AccountType, number>;
   incomes.forEach((i) => { bal[i.account] += i.amount; });
   transfers.forEach((t) => { bal[t.toAccount] += t.amount; bal[t.fromAccount] -= t.amount; });
   expenses.forEach((e) => { if (e.account) bal[e.account] -= e.amount; });
+  ACCOUNTS.forEach((a) => { bal[a] += adjustments[a] ?? 0; });
   return bal;
 }
