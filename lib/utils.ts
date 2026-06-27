@@ -56,7 +56,10 @@ export function groupByDay(
   const cur = new Date(start + "T00:00:00");
   const endDate = new Date(end + "T00:00:00");
   while (cur <= endDate) {
-    const dateStr = cur.toISOString().slice(0, 10);
+    const y = cur.getFullYear();
+    const m = String(cur.getMonth() + 1).padStart(2, "0");
+    const d = String(cur.getDate()).padStart(2, "0");
+    const dateStr = `${y}-${m}-${d}`;
     result.push({
       label: cur.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
       total: map[dateStr] ?? 0,
