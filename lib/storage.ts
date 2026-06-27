@@ -126,37 +126,72 @@ export function saveAccountConfigs(configs: Record<AccountType, AccountConfig>):
   localStorage.setItem(KEYS.accountConfigs, JSON.stringify(configs));
 }
 
-// ── Export / Import ───────────────────────────────────────────
-export function exportAllData(): string {
+// ── Export / Import — Settings ────────────────────────────────
+export function exportSettings(): string {
+  const theme = typeof window !== "undefined" ? (localStorage.getItem("theme") ?? "dark") : "dark";
   return JSON.stringify(
     {
       version: 1,
+      type: "settings",
       exportedAt: new Date().toISOString(),
-      expenses: getExpenses(),
-      incomes: getIncomes(),
-      transfers: getTransfers(),
+      theme,
       categories: getCategories(),
-      balanceAdjustments: getBalanceAdjustments(),
       accountConfigs: getAccountConfigs(),
+      balanceAdjustments: getBalanceAdjustments(),
     },
     null,
     2
   );
 }
 
-export function importAllData(json: string): void {
+export function importSettings(json: string): void {
   const data = JSON.parse(json);
-  if (!data || typeof data !== "object") throw new Error("Invalid backup file");
-  if (Array.isArray(data.expenses))   localStorage.setItem(KEYS.expenses,   JSON.stringify(data.expenses));
-  if (Array.isArray(data.incomes))    localStorage.setItem(KEYS.income,     JSON.stringify(data.incomes));
-  if (Array.isArray(data.transfers))  localStorage.setItem(KEYS.transfers,  JSON.stringify(data.transfers));
-  if (Array.isArray(data.categories)) localStorage.setItem(KEYS.categories, JSON.stringify(data.categories));
-  if (data.balanceAdjustments && typeof data.balanceAdjustments === "object") {
-    localStorage.setItem(KEYS.balanceAdj, JSON.stringify(data.balanceAdjustments));
-  }
+  if (!data || typeof data !== "object") throw new Error("Invalid file");
+  if (typeof data.theme === "string")     localStorage.setItem("theme", data.theme);
+  if (Array.isArray(data.categories))     localStorage.setItem(KEYS.categories,    JSON.stringify(data.categories));
   if (data.accountConfigs && typeof data.accountConfigs === "object") {
     localStorage.setItem(KEYS.accountConfigs, JSON.stringify(data.accountConfigs));
   }
+  if (data.balanceAdjustments && typeof data.balanceAdjustments === "object") {
+    localStorage.setItem(KEYS.balanceAdj, JSON.stringify(data.balanceAdjustments));
+  }
+}
+
+// ── Export / Import — Data ────────────────────────────────────
+export function exportData(): string {
+  return JSON.stringify(
+    {
+      version: 1,
+      type: "data",
+      exportedAt: new Date().toISOString(),
+      expenses: getExpenses(),
+      incomes: getIncomes(),
+      transfers: getTransfers(),
+    },
+    null,
+    2
+  );
+}
+
+export function importData(json: string): void {
+  const data = JSON.parse(json);
+  if (!data || typeof data !== "object") throw new Error("Invalid file");
+  if (Array.isArray(data.expenses))  localStorage.setItem(KEYS.expenses,  JSON.stringify(data.expenses));
+  if (Array.isArray(data.incomes))   localStorage.setItem(KEYS.income,    JSON.stringify(data.incomes));
+  if (Array.isArray(data.transfers)) localStorage.setItem(KEYS.transfers, JSON.stringify(data.transfers));
+}
+
+// ── Reset — Settings ──────────────────────────────────────────
+export function clearSettings(): void {
+  [KEYS.categories, KEYS.accountConfigs, KEYS.balanceAdj].forEach((k) => localStorage.removeItem(k));
+  localStorage.removeItem("theme");
+}
+
+// ── Reset — Data in range ─────────────────────────────────────
+export function clearDataInRange(start: string, end: string): void {
+  localStorage.setItem(KEYS.expenses,  JSON.stringify(getExpenses().filter((e) => e.date < start || e.date > end)));
+  localStorage.setItem(KEYS.income,    JSON.stringify(getIncomes().filter((i) => i.date < start || i.date > end)));
+  localStorage.setItem(KEYS.transfers, JSON.stringify(getTransfers().filter((t) => t.date < start || t.date > end)));
 }
 
 // ── Nuclear option ────────────────────────────────────────────
