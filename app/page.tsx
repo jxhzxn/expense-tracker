@@ -1,65 +1,170 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useCallback, useMemo } from "react";
+import Link from "next/link";
+import { Expense } from "@/lib/types";
+import { getExpenses, addExpense, updateExpense, deleteExpense } from "@/lib/storage";
+import { formatCurrency, sumByCategory, groupByMonth, groupByDay } from "@/lib/utils";
+import { RangeMode, getRangeForMode, daysBetween } from "@/lib/dateRange";
+import StatCard from "@/components/StatCard";
+import CategoryChart from "@/components/CategoryChart";
+import SpendingChart from "@/components/SpendingChart";
+import ExpenseForm from "@/components/ExpenseForm";
+import ExpenseRow from "@/components/ExpenseRow";
+import RangePicker from "@/components/RangePicker";
+
+export default function Dashboard() {
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editTarget, setEditTarget] = useState<Expense | null>(null);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const [rangeMode, setRangeMode] = useState<RangeMode>("payperiod");
+  const [customStart, setCustomStart] = useState(today);
+  const [customEnd, setCustomEnd] = useState(today);
+
+  const load = useCallback(() => setExpenses(getExpenses()), []);
+  useEffect(() => { load(); }, [load]);
+
+  const activeRange = useMemo(
+    () => getRangeForMode(rangeMode, customStart, customEnd),
+    [rangeMode, customStart, customEnd]
+  );
+
+  function handleRangeChange(mode: RangeMode, start?: string, end?: string) {
+    setRangeMode(mode);
+    if (start) setCustomStart(start);
+    if (end) setCustomEnd(end);
+  }
+
+  const periodExpenses = useMemo(
+    () => expenses.filter((e) => e.date >= activeRange.start && e.date <= activeRange.end),
+    [expenses, activeRange]
+  );
+
+  const periodTotal = periodExpenses.reduce((s, e) => s + e.amount, 0);
+  const allTotal = expenses.reduce((s, e) => s + e.amount, 0);
+  const days = daysBetween(activeRange.start, activeRange.end);
+  const dailyAvg = periodTotal / days;
+
+  const categoryData = Object.entries(sumByCategory(periodExpenses))
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+
+  const spendingData = useMemo(() => {
+    if (rangeMode === "week" || rangeMode === "payperiod" || rangeMode === "lastperiod") {
+      return groupByDay(periodExpenses, activeRange.start, activeRange.end);
+    }
+    const rangeDays = daysBetween(activeRange.start, activeRange.end);
+    return rangeDays <= 35
+      ? groupByDay(periodExpenses, activeRange.start, activeRange.end)
+      : groupByMonth(periodExpenses);
+  }, [rangeMode, periodExpenses, activeRange]);
+
+  const spendingChartTitle =
+    rangeMode === "week"
+      ? "Daily Spending (This Week)"
+      : rangeMode === "payperiod" || rangeMode === "lastperiod"
+      ? "Daily Spending (Pay Period)"
+      : "Spending Over Time";
+
+  function handleSave(data: Omit<Expense, "id" | "createdAt">) {
+    if (editTarget) {
+      updateExpense(editTarget.id, data);
+    } else {
+      addExpense(data);
+    }
+    setShowForm(false);
+    setEditTarget(null);
+    load();
+  }
+
+  function handleDelete(id: string) {
+    deleteExpense(id);
+    load();
+  }
+
+  const recentInPeriod = periodExpenses.slice(0, 5);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-[var(--c-t1)]">Dashboard</h1>
+        <button
+          onClick={() => { setEditTarget(null); setShowForm(true); }}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Expense
+        </button>
+      </div>
+
+      <div className="mb-8">
+        <RangePicker
+          mode={rangeMode}
+          customStart={customStart}
+          customEnd={customEnd}
+          rangeLabel={activeRange.label}
+          onChange={handleRangeChange}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <StatCard label="Period Total" value={formatCurrency(periodTotal)} sub={`${periodExpenses.length} expense${periodExpenses.length !== 1 ? "s" : ""}`} accent />
+        <StatCard label="All Time" value={formatCurrency(allTotal)} sub={`${expenses.length} total expense${expenses.length !== 1 ? "s" : ""}`} />
+        <StatCard label="Daily Avg" value={formatCurrency(dailyAvg)} sub={`over ${days} day${days !== 1 ? "s" : ""}`} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-6 mb-8">
+        <div className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+          <h2 className="text-sm font-medium text-[var(--c-t2)] mb-4">{spendingChartTitle}</h2>
+          <SpendingChart data={spendingData} />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+          <h2 className="text-sm font-medium text-[var(--c-t2)] mb-2">Spending by Category</h2>
+          <CategoryChart data={categoryData} />
         </div>
-      </main>
-    </div>
+      </div>
+
+      <div className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-medium text-[var(--c-t2)]">
+            Recent Expenses
+            <span className="ml-2 text-[var(--c-t3)] font-normal">{activeRange.label}</span>
+          </h2>
+          <Link href="/expenses" className="text-xs transition-colors" style={{ color: "var(--c-accent-text)" }}>
+            View all
+          </Link>
+        </div>
+        {recentInPeriod.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-[var(--c-t3)] text-sm">No expenses in this period.</p>
+            <button
+              onClick={() => { setEditTarget(null); setShowForm(true); }}
+              className="mt-3 text-sm transition-colors"
+              style={{ color: "var(--c-accent-text)" }}
+            >
+              Add an expense
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {recentInPeriod.map((e) => (
+              <ExpenseRow key={e.id} expense={e} onEdit={(exp) => { setEditTarget(exp); setShowForm(true); }} onDelete={handleDelete} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {showForm && (
+        <ExpenseForm
+          expense={editTarget}
+          onSave={handleSave}
+          onClose={() => { setShowForm(false); setEditTarget(null); }}
+        />
+      )}
+    </>
   );
 }
