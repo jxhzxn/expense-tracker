@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Expense, Income, Transfer, CATEGORIES, Category, ACCOUNT_COLORS } from "@/lib/types";
+import { Expense, Income, Transfer, Category, ACCOUNT_COLORS } from "@/lib/types";
 import {
   getExpenses, addExpense, updateExpense, deleteExpense,
   getIncomes, addIncome, updateIncome, deleteIncome,
   getTransfers, addTransfer, deleteTransfer,
+  getCategories,
 } from "@/lib/storage";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import ExpenseForm from "@/components/ExpenseForm";
@@ -33,11 +34,13 @@ export default function TransactionsPage() {
   const [search, setSearch]                   = useState("");
   const [filterCategory, setFilterCategory]   = useState<Category | "All">("All");
   const [sortBy, setSortBy]                   = useState<"date" | "amount">("date");
+  const [categories, setCategories]           = useState<string[]>(() => getCategories());
 
   const loadAll = useCallback(() => {
     setExpenses(getExpenses());
     setIncomes(getIncomes());
     setTransfers(getTransfers());
+    setCategories(getCategories());
   }, []);
   useEffect(() => { loadAll(); }, [loadAll]);
 
@@ -210,7 +213,7 @@ export default function TransactionsPage() {
         {activeTab === "expenses" && (
           <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value as Category | "All")} className={inputClass}>
             <option value="All">All Categories</option>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         )}
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value as "date" | "amount")} className={inputClass}>

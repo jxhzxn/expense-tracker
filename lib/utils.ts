@@ -1,4 +1,16 @@
-import { Expense, Income, Transfer, AccountType, ACCOUNTS } from "./types";
+import { Expense, Income, Transfer, AccountType, ACCOUNTS, CATEGORY_COLORS } from "./types";
+
+const EXTRA_COLORS = [
+  "#ef4444", "#8b5cf6", "#14b8a6", "#f43f5e",
+  "#84cc16", "#fb923c", "#60a5fa", "#c084fc",
+  "#34d399", "#f472b6", "#a3e635", "#38bdf8",
+];
+
+export function getCategoryColor(category: string): string {
+  if (category in CATEGORY_COLORS) return CATEGORY_COLORS[category];
+  const hash = [...category].reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return EXTRA_COLORS[hash % EXTRA_COLORS.length];
+}
 
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {

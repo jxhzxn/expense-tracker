@@ -3,10 +3,22 @@
 import { Expense, Income, Transfer } from "./types";
 
 const KEYS = {
-  expenses: "expense-tracker-v1",
-  income:   "expense-tracker-income-v1",
-  transfers:"expense-tracker-transfers-v1",
+  expenses:   "expense-tracker-v1",
+  income:     "expense-tracker-income-v1",
+  transfers:  "expense-tracker-transfers-v1",
+  categories: "expense-tracker-categories-v1",
 };
+
+export const DEFAULT_CATEGORIES = [
+  "Food & Drink",
+  "Transport",
+  "Shopping",
+  "Entertainment",
+  "Health",
+  "Housing",
+  "Travel",
+  "Other",
+];
 
 function read<T>(key: string): T[] {
   if (typeof window === "undefined") return [];
@@ -68,6 +80,16 @@ export function addTransfer(transfer: Omit<Transfer, "id" | "createdAt">): Trans
 
 export function deleteTransfer(id: string): void {
   write(KEYS.transfers, getTransfers().filter((t) => t.id !== id));
+}
+
+// ── Categories ────────────────────────────────────────────────
+export function getCategories(): string[] {
+  const stored = read<string>(KEYS.categories);
+  return stored.length > 0 ? stored : [...DEFAULT_CATEGORIES];
+}
+
+export function saveCategories(cats: string[]): void {
+  write(KEYS.categories, cats);
 }
 
 // ── Nuclear option ────────────────────────────────────────────

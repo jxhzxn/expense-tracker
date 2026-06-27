@@ -1,8 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { CATEGORY_COLORS } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getCategoryColor } from "@/lib/utils";
 
 interface Props {
   data: { name: string; value: number }[];
@@ -37,7 +36,7 @@ export default function CategoryChart({ data }: Props) {
       <PieChart>
         <Pie data={data} cx="50%" cy="50%" innerRadius={60} outerRadius={95} paddingAngle={3} dataKey="value">
           {data.map((entry) => (
-            <Cell key={entry.name} fill={CATEGORY_COLORS[entry.name as keyof typeof CATEGORY_COLORS] ?? "#6b7280"} />
+            <Cell key={entry.name} fill={getCategoryColor(entry.name)} />
           ))}
         </Pie>
         <Tooltip content={<CustomTooltip />} />

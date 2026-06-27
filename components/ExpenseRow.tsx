@@ -1,7 +1,7 @@
 "use client";
 
-import { Expense, CATEGORY_COLORS, ACCOUNT_COLORS } from "@/lib/types";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { Expense, ACCOUNT_COLORS } from "@/lib/types";
+import { formatCurrency, formatDate, getCategoryColor } from "@/lib/utils";
 
 interface Props {
   expense: Expense;
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function ExpenseRow({ expense, onEdit, onDelete }: Props) {
-  const color = CATEGORY_COLORS[expense.category] ?? "#6b7280";
+  const color = getCategoryColor(expense.category);
   const accountColor = expense.account ? ACCOUNT_COLORS[expense.account] : null;
 
   return (

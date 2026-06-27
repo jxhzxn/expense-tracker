@@ -1,25 +1,6 @@
-export type Category =
-  | "Food & Drink"
-  | "Transport"
-  | "Shopping"
-  | "Entertainment"
-  | "Health"
-  | "Housing"
-  | "Travel"
-  | "Other";
+export type Category = string;
 
-export const CATEGORIES: Category[] = [
-  "Food & Drink",
-  "Transport",
-  "Shopping",
-  "Entertainment",
-  "Health",
-  "Housing",
-  "Travel",
-  "Other",
-];
-
-export const CATEGORY_COLORS: Record<Category, string> = {
+export const CATEGORY_COLORS: Record<string, string> = {
   "Food & Drink": "#f97316",
   Transport: "#3b82f6",
   Shopping: "#a855f7",
