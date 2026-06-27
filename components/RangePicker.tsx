@@ -11,30 +11,31 @@ interface Props {
 }
 
 const MODES: { key: RangeMode; label: string }[] = [
-  { key: "week", label: "This Week" },
-  { key: "payperiod", label: "Pay Period" },
+  { key: "week",       label: "This Week" },
+  { key: "payperiod",  label: "Pay Period" },
   { key: "lastperiod", label: "Last Period" },
-  { key: "custom", label: "Custom" },
+  { key: "custom",     label: "Custom" },
 ];
 
-const dateInputClass = "bg-[var(--c-input)] border border-[var(--c-border)] rounded-lg px-3 py-1.5 text-sm text-[var(--c-t1)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500";
+const dateInputClass = "bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-1.5 text-sm text-[var(--c-t1)] focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-colors";
 
 export default function RangePicker({ mode, customStart, customEnd, rangeLabel, onChange }: Props) {
   return (
     <div className="flex flex-col gap-2.5">
       <div
-        className="flex items-center gap-1 rounded-xl p-1 border"
-        style={{ backgroundColor: "var(--c-subtle)", borderColor: "var(--c-border)" }}
+        className="flex items-center gap-1 rounded-xl p-1"
+        style={{ backgroundColor: "var(--c-subtle)", border: "1px solid var(--c-border)" }}
       >
         {MODES.map((m) => (
           <button
             key={m.key}
             onClick={() => onChange(m.key)}
-            className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               mode === m.key
                 ? "bg-indigo-600 text-white shadow-sm"
-                : "text-[var(--c-t2)] hover:text-[var(--c-t1)] hover:bg-[var(--c-card)]"
+                : "hover:bg-[var(--c-card)]"
             }`}
+            style={{ color: mode === m.key ? "white" : "var(--c-t2)" }}
           >
             {m.label}
           </button>
@@ -50,7 +51,7 @@ export default function RangePicker({ mode, customStart, customEnd, rangeLabel, 
             onChange={(e) => onChange("custom", e.target.value, customEnd)}
             className={dateInputClass}
           />
-          <span className="text-[var(--c-t3)] text-sm">to</span>
+          <span className="text-sm" style={{ color: "var(--c-t3)" }}>to</span>
           <input
             type="date"
             value={customEnd}
@@ -60,7 +61,7 @@ export default function RangePicker({ mode, customStart, customEnd, rangeLabel, 
           />
         </div>
       ) : (
-        <p className="text-xs text-[var(--c-t3)] pl-1">{rangeLabel}</p>
+        <p className="text-xs pl-1" style={{ color: "var(--c-t3)" }}>{rangeLabel}</p>
       )}
     </div>
   );

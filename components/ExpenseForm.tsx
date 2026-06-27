@@ -9,7 +9,7 @@ interface Props {
   onClose: () => void;
 }
 
-const inputClass = "w-full bg-[var(--c-input)] border border-[var(--c-border)] rounded-lg px-3 py-2.5 text-[var(--c-t1)] placeholder-[var(--c-t3)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500";
+const inputClass = "w-full bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-2.5 text-[var(--c-t1)] placeholder-[var(--c-t3)] focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-colors";
 
 export default function ExpenseForm({ expense, onSave, onClose }: Props) {
   const today = new Date().toISOString().slice(0, 10);
@@ -35,19 +35,23 @@ export default function ExpenseForm({ expense, onSave, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
-        <h2 className="text-xl font-semibold text-[var(--c-t1)] mb-5">
+      <div
+        className="w-full max-w-md rounded-2xl p-6"
+        style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow-lg)" }}
+      >
+        <h2 className="text-lg font-semibold mb-5" style={{ color: "var(--c-t1)" }}>
           {expense ? "Edit Expense" : "Add Expense"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-[var(--c-t2)] mb-1">Amount</label>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--c-t2)" }}>Amount</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--c-t2)] text-sm font-medium">RM</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold" style={{ color: "var(--c-t3)" }}>RM</span>
               <input
                 type="number" inputMode="decimal" min="0.01" step="0.01" placeholder="0.00"
                 value={amount}
@@ -56,18 +60,18 @@ export default function ExpenseForm({ expense, onSave, onClose }: Props) {
                 autoFocus
               />
             </div>
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+            {error && <p className="text-red-500 text-sm mt-1.5">{error}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-[var(--c-t2)] mb-1">Category</label>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--c-t2)" }}>Category</label>
               <select value={category} onChange={(e) => setCategory(e.target.value as Category)} className={inputClass}>
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm text-[var(--c-t2)] mb-1">Paid with</label>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--c-t2)" }}>Paid with</label>
               <select value={account} onChange={(e) => setAccount(e.target.value as AccountType)} className={inputClass}>
                 {ACCOUNTS.map((a) => <option key={a} value={a}>{a}</option>)}
               </select>
@@ -75,25 +79,30 @@ export default function ExpenseForm({ expense, onSave, onClose }: Props) {
           </div>
 
           <div>
-            <label className="block text-sm text-[var(--c-t2)] mb-1">Date</label>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--c-t2)" }}>Date</label>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
           </div>
 
           <div>
-            <label className="block text-sm text-[var(--c-t2)] mb-1">
-              Note <span className="text-[var(--c-t3)]">(optional)</span>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--c-t2)" }}>
+              Note <span style={{ color: "var(--c-t3)" }}>(optional)</span>
             </label>
             <input type="text" placeholder="What was this for?" value={note} onChange={(e) => setNote(e.target.value)} className={inputClass} />
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose}
-              className="flex-1 py-2.5 rounded-lg border text-[var(--c-t4)] hover:bg-[var(--c-hover)] transition-colors"
-              style={{ borderColor: "var(--c-border)" }}>
+          <div className="flex gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors hover:bg-[var(--c-hover)]"
+              style={{ border: "1px solid var(--c-border)", color: "var(--c-t2)" }}
+            >
               Cancel
             </button>
-            <button type="submit"
-              className="flex-1 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-colors">
+            <button
+              type="submit"
+              className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition-colors"
+            >
               {expense ? "Save Changes" : "Add Expense"}
             </button>
           </div>

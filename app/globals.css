@@ -1,54 +1,70 @@
 @import "tailwindcss";
 
-/* Light mode tokens */
+/* ── Light mode ─────────────────────────────────────────────── */
 :root {
   color-scheme: light;
 
-  --c-page:        #ffffff;
-  --c-card:        #ffffff;
-  --c-input:       #f4f4f5;
-  --c-subtle:      #f4f4f5;
-  --c-hover:       #f4f4f5;
-  --c-hover-2:     #e4e4e7;
-  --c-nav:         rgba(255, 255, 255, 0.85);
+  /* Surfaces */
+  --c-page:    #eef0f4;          /* cool-gray page — white cards pop above it */
+  --c-card:    #ffffff;
+  --c-input:   #f4f5f7;          /* form field background */
+  --c-subtle:  #e6e8ed;          /* segmented controls, inset areas */
+  --c-hover:   rgba(0, 0, 0, 0.04);
+  --c-hover-2: rgba(0, 0, 0, 0.08);
+  --c-nav:     rgba(255, 255, 255, 0.88);
 
-  --c-border:      #e4e4e7;
-  --c-border-2:    #d4d4d8;
-  --c-divide:      #f4f4f5;
+  /* Borders — only used for inputs & dividers, NOT cards */
+  --c-border:       #d4d8e0;     /* input/control outlines */
+  --c-input-border: #bcc1cc;     /* clearly visible form input border */
+  --c-divide:       #eef0f4;     /* row dividers inside lists */
 
-  --c-t1:          #18181b;
-  --c-t2:          #71717a;
-  --c-t3:          #a1a1aa;
-  --c-t4:          #52525b;
+  /* Text */
+  --c-t1: #0d1117;               /* headings / primary */
+  --c-t2: #4a5260;               /* secondary labels */
+  --c-t3: #8891a4;               /* hints, placeholders */
+  --c-t4: #374151;               /* cancel / muted actions */
 
+  /* Elevation — cards use shadow, no border */
+  --c-shadow:    0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.07);
+  --c-shadow-lg: 0 4px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13);
+
+  /* Accent (indigo) */
   --c-accent-bg:     #eef2ff;
   --c-accent-border: #c7d2fe;
   --c-accent-text:   #4f46e5;
 }
 
-/* Dark mode tokens */
+/* ── Dark mode ──────────────────────────────────────────────── */
 .dark {
   color-scheme: dark;
 
-  --c-page:        #09090b;
-  --c-card:        #18181b;
-  --c-input:       #27272a;
-  --c-subtle:      #18181b;
-  --c-hover:       rgba(39, 39, 42, 0.5);
-  --c-hover-2:     #3f3f46;
-  --c-nav:         rgba(9, 9, 11, 0.85);
+  /* Surfaces */
+  --c-page:    #0d0d11;
+  --c-card:    #14141a;
+  --c-input:   #1c1c24;
+  --c-subtle:  #14141a;
+  --c-hover:   rgba(255, 255, 255, 0.05);
+  --c-hover-2: rgba(255, 255, 255, 0.08);
+  --c-nav:     rgba(13, 13, 17, 0.90);
 
-  --c-border:      #27272a;
-  --c-border-2:    #3f3f46;
-  --c-divide:      rgba(39, 39, 42, 0.5);
+  /* Borders */
+  --c-border:       #22222d;
+  --c-input-border: #2c2c3c;
+  --c-divide:       rgba(255, 255, 255, 0.06);
 
-  --c-t1:          #ffffff;
-  --c-t2:          #a1a1aa;
-  --c-t3:          #71717a;
-  --c-t4:          #d4d4d8;
+  /* Text */
+  --c-t1: #f0f0f8;
+  --c-t2: #9097aa;
+  --c-t3: #575c70;
+  --c-t4: #bdc2d4;
 
-  --c-accent-bg:     rgba(99, 102, 241, 0.1);
-  --c-accent-border: rgba(99, 102, 241, 0.3);
+  /* Elevation */
+  --c-shadow:    0 1px 3px rgba(0,0,0,0.35), 0 4px 14px rgba(0,0,0,0.25);
+  --c-shadow-lg: 0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35);
+
+  /* Accent */
+  --c-accent-bg:     rgba(99, 102, 241, 0.12);
+  --c-accent-border: rgba(99, 102, 241, 0.28);
   --c-accent-text:   #818cf8;
 }
 

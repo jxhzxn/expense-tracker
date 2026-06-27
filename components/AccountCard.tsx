@@ -12,8 +12,8 @@ export default function AccountCard({ account, balance }: Props) {
 
   return (
     <div
-      className="rounded-2xl p-4 border flex flex-col gap-3"
-      style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}
+      className="rounded-2xl p-4 flex flex-col gap-3"
+      style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}
     >
       <div className="flex items-center gap-2.5">
         <div
@@ -23,14 +23,11 @@ export default function AccountCard({ account, balance }: Props) {
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-medium text-[var(--c-t1)] truncate">{account}</p>
-          <p className="text-xs text-[var(--c-t3)] truncate">{ACCOUNT_DESC[account]}</p>
+          <p className="text-sm font-semibold truncate" style={{ color: "var(--c-t1)" }}>{account}</p>
+          <p className="text-xs truncate" style={{ color: "var(--c-t3)" }}>{ACCOUNT_DESC[account]}</p>
         </div>
       </div>
-      <p
-        className="text-xl font-bold"
-        style={{ color: isNegative ? "#ef4444" : "var(--c-t1)" }}
-      >
+      <p className="text-xl font-bold tracking-tight" style={{ color: isNegative ? "#ef4444" : "var(--c-t1)" }}>
         {formatCurrency(balance)}
       </p>
     </div>

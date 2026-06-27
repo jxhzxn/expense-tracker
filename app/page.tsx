@@ -133,8 +133,8 @@ export default function Dashboard() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowTransferForm(true)}
-            className="flex items-center gap-2 px-4 py-2 border text-[var(--c-t2)] hover:text-[var(--c-t1)] hover:bg-[var(--c-hover)] rounded-xl font-medium text-sm transition-colors"
-            style={{ borderColor: "var(--c-border)" }}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-colors hover:bg-[var(--c-hover)]"
+            style={{ border: "1px solid var(--c-border)", color: "var(--c-t2)" }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -202,28 +202,28 @@ export default function Dashboard() {
 
       {/* Charts */}
       <div className="grid grid-cols-2 gap-6 mb-6">
-        <div className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
-          <h2 className="text-sm font-medium text-[var(--c-t2)] mb-4">{spendingChartTitle}</h2>
+        <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
+          <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--c-t2)" }}>{spendingChartTitle}</h2>
           <SpendingChart data={spendingData} />
         </div>
-        <div className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
-          <h2 className="text-sm font-medium text-[var(--c-t2)] mb-2">Spending by Category</h2>
+        <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
+          <h2 className="text-sm font-semibold mb-2" style={{ color: "var(--c-t2)" }}>Spending by Category</h2>
           <CategoryChart data={categoryData} />
         </div>
       </div>
 
       {/* Trend Chart */}
-      <div className="rounded-2xl p-5 border mb-8" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
-        <h2 className="text-sm font-medium text-[var(--c-t2)] mb-4">Income vs Expenses — Last 6 Months</h2>
+      <div className="rounded-2xl p-5 mb-8" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
+        <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--c-t2)" }}>Income vs Expenses — Last 6 Months</h2>
         <TrendChart data={trendData} />
       </div>
 
       {/* Recent Expenses */}
-      <div className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+      <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-medium text-[var(--c-t2)]">
+          <h2 className="text-sm font-semibold" style={{ color: "var(--c-t2)" }}>
             Recent Expenses
-            <span className="ml-2 text-[var(--c-t3)] font-normal">{activeRange.label}</span>
+            <span className="ml-2 font-normal" style={{ color: "var(--c-t3)" }}>{activeRange.label}</span>
           </h2>
           <Link href="/expenses" className="text-xs transition-colors" style={{ color: "var(--c-accent-text)" }}>
             View all

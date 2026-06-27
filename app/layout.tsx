@@ -31,7 +31,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[var(--c-page)] text-[var(--c-t1)] transition-colors duration-200">
         <ThemeProvider>
-          <nav className="border-b border-[var(--c-border)] bg-[var(--c-nav)] backdrop-blur-sm sticky top-0 z-40">
+          <nav className="bg-[var(--c-nav)] backdrop-blur-md sticky top-0 z-40" style={{ borderBottom: "1px solid var(--c-border)", boxShadow: "0 1px 0 var(--c-border), 0 4px 12px rgba(0,0,0,0.04)" }}>
             <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
               <Link href="/" className="font-semibold text-[var(--c-t1)] flex items-center gap-2">
                 <span className="text-indigo-500 text-lg">RM</span>

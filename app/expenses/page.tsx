@@ -15,7 +15,7 @@ import ExpenseRow from "@/components/ExpenseRow";
 
 type Tab = "expenses" | "income" | "transfers";
 
-const inputClass = "bg-[var(--c-card)] border border-[var(--c-border)] rounded-xl px-3 py-2 text-sm text-[var(--c-t1)] focus:outline-none focus:border-indigo-500";
+const inputClass = "bg-[var(--c-input)] border border-[var(--c-input-border)] rounded-xl px-3 py-2 text-sm text-[var(--c-t1)] focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-colors";
 
 export default function TransactionsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("expenses");
@@ -113,8 +113,8 @@ export default function TransactionsPage() {
 
   const tabBtnClass = (tab: Tab) =>
     activeTab === tab
-      ? "flex-1 py-2 rounded-lg text-sm font-medium bg-[var(--c-card)] text-[var(--c-t1)] shadow-sm border border-[var(--c-border)]"
-      : "flex-1 py-2 rounded-lg text-sm text-[var(--c-t2)] hover:text-[var(--c-t1)] transition-colors";
+      ? "flex-1 py-2 rounded-lg text-sm font-semibold bg-[var(--c-card)] shadow-sm"
+      : "flex-1 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--c-hover)]";
 
   return (
     <>
@@ -123,17 +123,17 @@ export default function TransactionsPage() {
         <div>
           <h1 className="text-2xl font-bold text-[var(--c-t1)]">Transactions</h1>
           {activeTab === "expenses" && filteredExpenses.length > 0 && (
-            <p className="text-[var(--c-t2)] text-sm mt-0.5">
+            <p className="text-sm mt-0.5" style={{ color: "var(--c-t2)" }}>
               {filteredExpenses.length} expense{filteredExpenses.length !== 1 ? "s" : ""} · {formatCurrency(filteredExpenses.reduce((s, e) => s + e.amount, 0))}
             </p>
           )}
           {activeTab === "income" && filteredIncomes.length > 0 && (
-            <p className="text-[var(--c-t2)] text-sm mt-0.5">
+            <p className="text-sm mt-0.5" style={{ color: "var(--c-t2)" }}>
               {filteredIncomes.length} entr{filteredIncomes.length !== 1 ? "ies" : "y"} · {formatCurrency(filteredIncomes.reduce((s, i) => s + i.amount, 0))}
             </p>
           )}
           {activeTab === "transfers" && filteredTransfers.length > 0 && (
-            <p className="text-[var(--c-t2)] text-sm mt-0.5">
+            <p className="text-sm mt-0.5" style={{ color: "var(--c-t2)" }}>
               {filteredTransfers.length} transfer{filteredTransfers.length !== 1 ? "s" : ""}
             </p>
           )}
@@ -178,9 +178,16 @@ export default function TransactionsPage() {
         className="flex gap-1 p-1 rounded-xl mb-6"
         style={{ backgroundColor: "var(--c-subtle)", border: "1px solid var(--c-border)" }}
       >
-        <button onClick={() => setActiveTab("expenses")}  className={tabBtnClass("expenses")}>Expenses</button>
-        <button onClick={() => setActiveTab("income")}    className={tabBtnClass("income")}>Income</button>
-        <button onClick={() => setActiveTab("transfers")} className={tabBtnClass("transfers")}>Transfers</button>
+        {(["expenses", "income", "transfers"] as Tab[]).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={tabBtnClass(tab)}
+            style={{ color: activeTab === tab ? "var(--c-t1)" : "var(--c-t2)" }}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
       </div>
 
       {/* Filter bar */}
@@ -234,10 +241,10 @@ export default function TransactionsPage() {
               return (
                 <div key={month}>
                   <div className="flex items-center justify-between mb-2 px-4">
-                    <span className="text-xs font-medium text-[var(--c-t3)] uppercase tracking-wider">{monthLabel(month)}</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--c-t3)" }}>{monthLabel(month)}</span>
                     <span className="text-xs text-[var(--c-t3)]">{formatCurrency(total)}</span>
                   </div>
-                  <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+                  <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
                     <div className="divide-y divide-[var(--c-divide)]">
                       {items.map((e) => (
                         <ExpenseRow key={e.id} expense={e} onEdit={(exp) => { setEditExpense(exp); setShowExpenseForm(true); }} onDelete={(id) => { deleteExpense(id); loadAll(); }} />
@@ -249,7 +256,7 @@ export default function TransactionsPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
             <div className="divide-y divide-[var(--c-divide)]">
               {filteredExpenses.map((e) => (
                 <ExpenseRow key={e.id} expense={e} onEdit={(exp) => { setEditExpense(exp); setShowExpenseForm(true); }} onDelete={(id) => { deleteExpense(id); loadAll(); }} />
@@ -284,10 +291,10 @@ export default function TransactionsPage() {
               return (
                 <div key={month}>
                   <div className="flex items-center justify-between mb-2 px-4">
-                    <span className="text-xs font-medium text-[var(--c-t3)] uppercase tracking-wider">{monthLabel(month)}</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--c-t3)" }}>{monthLabel(month)}</span>
                     <span className="text-xs text-green-500">+{formatCurrency(total)}</span>
                   </div>
-                  <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+                  <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
                     <div className="divide-y divide-[var(--c-divide)]">
                       {items.map((i) => {
                         const acColor = ACCOUNT_COLORS[i.account];
@@ -338,7 +345,7 @@ export default function TransactionsPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
             <div className="divide-y divide-[var(--c-divide)]">
               {filteredIncomes.map((i) => {
                 const acColor = ACCOUNT_COLORS[i.account];
@@ -411,10 +418,10 @@ export default function TransactionsPage() {
               return (
                 <div key={month}>
                   <div className="flex items-center justify-between mb-2 px-4">
-                    <span className="text-xs font-medium text-[var(--c-t3)] uppercase tracking-wider">{monthLabel(month)}</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--c-t3)" }}>{monthLabel(month)}</span>
                     <span className="text-xs text-[var(--c-t3)]">{items.length} transfer{items.length !== 1 ? "s" : ""}</span>
                   </div>
-                  <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+                  <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
                     <div className="divide-y divide-[var(--c-divide)]">
                       {items.map((t) => <TransferRow key={t.id} transfer={t} onDelete={(id) => { deleteTransfer(id); loadAll(); }} />)}
                     </div>
@@ -424,7 +431,7 @@ export default function TransactionsPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "var(--c-card)", borderColor: "var(--c-border)" }}>
+          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--c-card)", boxShadow: "var(--c-shadow)" }}>
             <div className="divide-y divide-[var(--c-divide)]">
               {filteredTransfers.map((t) => <TransferRow key={t.id} transfer={t} onDelete={(id) => { deleteTransfer(id); loadAll(); }} />)}
             </div>
