@@ -69,3 +69,8 @@ export function addTransfer(transfer: Omit<Transfer, "id" | "createdAt">): Trans
 export function deleteTransfer(id: string): void {
   write(KEYS.transfers, getTransfers().filter((t) => t.id !== id));
 }
+
+// ── Nuclear option ────────────────────────────────────────────
+export function clearAllData(): void {
+  Object.values(KEYS).forEach((key) => localStorage.removeItem(key));
+}

@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
+import ResetDataButton from "@/components/ResetDataButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,6 +52,7 @@ export default function RootLayout({
                   Transactions
                 </Link>
                 <div className="w-px h-5 bg-[var(--c-border)] mx-1" />
+                <ResetDataButton />
                 <ThemeToggle />
               </div>
             </div>
