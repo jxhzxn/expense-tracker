@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { Expense, Income, Transfer, ACCOUNTS, AccountType } from "@/lib/types";
+import { Expense, Income, Transfer, ACCOUNTS, AccountType, AccountConfig, DEFAULT_ACCOUNT_CONFIGS } from "@/lib/types";
 import {
   getExpenses, addExpense, updateExpense, deleteExpense,
   getIncomes, addIncome, updateIncome, deleteIncome,
@@ -10,7 +10,6 @@ import {
   getBalanceAdjustments, saveBalanceAdjustments,
   getAccountConfigs,
 } from "@/lib/storage";
-import type { AccountConfig } from "@/lib/types";
 import {
   formatCurrency, sumByCategory, groupByMonth, groupByDay,
   groupByMonthTrend, getAccountBalances,
@@ -33,7 +32,7 @@ export default function Dashboard() {
   const [incomes, setIncomes]           = useState<Income[]>([]);
   const [transfers, setTransfers]       = useState<Transfer[]>([]);
   const [balanceAdj, setBalanceAdj]     = useState<Record<string, number>>({});
-  const [accountConfigs, setAccountConfigs] = useState<Record<string, AccountConfig>>(() => getAccountConfigs());
+  const [accountConfigs, setAccountConfigs] = useState<Record<string, AccountConfig>>(DEFAULT_ACCOUNT_CONFIGS);
 
   const [showExpenseForm, setShowExpenseForm]   = useState(false);
   const [editExpense, setEditExpense]           = useState<Expense | null>(null);

@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { useTheme } from "@/components/ThemeProvider";
 import {
-  getCategories, saveCategories,
+  getCategories, saveCategories, DEFAULT_CATEGORIES,
   exportSettings, importSettings,
   exportData, importData,
   clearSettings, clearDataInRange,
@@ -11,7 +11,7 @@ import {
   getExpenses, getIncomes, getTransfers,
 } from "@/lib/storage";
 import { getCategoryColor } from "@/lib/utils";
-import { ACCOUNTS, ACCOUNT_DESC, AccountType, AccountConfig } from "@/lib/types";
+import { ACCOUNTS, ACCOUNT_DESC, AccountType, AccountConfig, DEFAULT_ACCOUNT_CONFIGS } from "@/lib/types";
 import AccountIcon, { ICON_KEYS, ICON_LABELS } from "@/components/AccountIcon";
 
 // ── Date helpers ──────────────────────────────────────────────
@@ -100,7 +100,8 @@ function AppearanceSection() {
 
 // ── Categories ────────────────────────────────────────────────
 function CategoriesSection() {
-  const [categories, setCategories] = useState<string[]>(() => getCategories());
+  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
+  useEffect(() => { setCategories(getCategories()); }, []);
   const [newName, setNewName] = useState("");
   const [error, setError] = useState("");
 
@@ -290,9 +291,8 @@ const PRESET_COLORS = [
 ];
 
 function AccountsSection() {
-  const [configs, setConfigs] = useState<Record<AccountType, AccountConfig>>(
-    () => getAccountConfigs()
-  );
+  const [configs, setConfigs] = useState<Record<AccountType, AccountConfig>>(DEFAULT_ACCOUNT_CONFIGS);
+  useEffect(() => { setConfigs(getAccountConfigs()); }, []);
   const [open, setOpen] = useState<AccountType | null>(null);
 
   function update(account: AccountType, patch: Partial<AccountConfig>) {
